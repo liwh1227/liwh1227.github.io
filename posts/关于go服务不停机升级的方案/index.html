@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="背景 在Go语言中，优雅地结束服务是一个非常重要的问题，因为它直接关系到服务的可靠性和稳定性。在传统的服务结束方式中，直接使用os.Exit()或syscall.Exit()等方法来结束服务，会导致服务无法优雅地退出，可能会出现一些问题，如未处理完的请求、未关闭的连接等。
+目前项目的go服务主要用于接受外部app请求，根据请求信息进行相应逻辑处理后，将信息落库和上链。
+我们要做到服务的优雅关闭，需要保证下面几类功能模块能够处理完请求后才退出：
+http模块能够处理完成当前请求后正确退出； 消息队列模块能够将待消费的消息处理完成后退出； 未处理完的逻辑、监听区块链事件未处理完的逻辑等，保证能够在处理完成上述逻辑后再退出gateway服务，并且能够再某一个服务实例退出后，其他服务实例仍然可以工作。 实现方案 主要思路 gateway服务退出后，需要保证仍然能够对外提供相应的接口服务；
+gateway通过docker容器方式运行，当我们停止docker容器时，需要使用 docker-compose down 或 docker-compose stop 命令结束服务。这两条命令会向容器发送系统中断信号，所以我们首先要考虑如何在容器收到结束信号时通知到服务；
+gateway服务会启动http模块、消息队列模块以及区块链模块这三部分异步任务，我们需要考虑在退出主协程时如何保证上述三个子协程处理的模块能够在处理完当前逻辑后退出；
+我们基于上述的3个问题分别进行解决，并通过demo代码进行演示。
+实施方案 1. 负载均衡 为了保证某个服务停止后，仍然有其他实例能够对外提供服务，我们必须要对当前服务做负载均衡，这里是让运维同事通过nginx对gateway服务做了负载。这样就能保证某个实例停服更新时，可以将外部请求负载到其他的服务实例上。
+通过上述三步基本能够保证优雅停机升级服务，但是在某些细节上还需要进行优化。
+2. 处理和监听系统信号 使用 docker-compose down 或 docker-compose stop 命令进行docker容器停止，容器会收到 SIGTERM 中断信号，所以我们需要在服务中针对该信号进行捕捉和处理，主要处理方法如下：
+package main import ( &#34;os&#34; &#34;os/signal&#34; &#34;syscall&#34; ) func main() { signals := make(chan os.Signal, 1) signal.Notify(signals, syscall.SIGTERM, syscall.SIGINT) &lt;-signals // do logic... } 开始时， signals 处于阻塞状态，当接收到上述SIGTERM 或 SIGINT信号后，说明运行容器要停止，进行系统退出后的逻辑处理。这里有一点需要注意，当我们运行上述命令后，容器会有默认停止的超时时间（10s），当超过该时间后系统会发送 SIGKILL 信号，
+该信号无法被捕捉，为了保证服务能够最大程度的处理完业务逻辑，我们需要在停止容器时添加超时时间的命令， 例如：docker-compose down --timeout 120，将最大超时时间设置为120s，当超过这个时间后才会发送 SIGKILL 信号。">  
+
+  <title>
+    
+      关于go服务不停机升级的方案
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.10776b9b86bf7e3aca232a6c5e4fbdc3baacf45c0cc3a1802995836aa1689368e8fadebd3e46fdc9ad87eab1f834f5bbb28dbb2b23fea73ae3e57c258caef3bd.css" integrity="sha512-EHdrm4a/fjrKIypsXk&#43;9w7qs9FwMw6GAKZWDaqFok2jo&#43;t69Pkb9ya2H6rH4NPW7so27KyP&#43;pzrj5XwljK7zvQ==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+<a href="/">..</a>
+
+<article>
+    <p class="post-meta">
+        <time datetime="2023-07-31 00:00:00 &#43;0000 UTC">
+            2023-07-31
+        </time>
+    </p>
+
+    <h1>关于go服务不停机升级的方案</h1>
+
+    
+
+    <h2 id="背景">背景</h2>
+<p>在Go语言中，优雅地结束服务是一个非常重要的问题，因为它直接关系到服务的可靠性和稳定性。在传统的服务结束方式中，直接使用os.Exit()或syscall.Exit()等方法来结束服务，会导致服务无法优雅地退出，可能会出现一些问题，如未处理完的请求、未关闭的连接等。</p>
+<p>目前项目的go服务主要用于接受外部app请求，根据请求信息进行相应逻辑处理后，将信息落库和上链。</p>
+<p>我们要做到服务的优雅关闭，需要保证下面几类功能模块能够处理完请求后才退出：</p>
+<ol>
+<li>http模块能够处理完成当前请求后正确退出；</li>
+<li>消息队列模块能够将待消费的消息处理完成后退出；</li>
+<li>未处理完的逻辑、监听区块链事件未处理完的逻辑等，保证能够在处理完成上述逻辑后再退出gateway服务，并且能够再某一个服务实例退出后，其他服务实例仍然可以工作。</li>
+</ol>
+<h2 id="实现方案">实现方案</h2>
+<h3 id="主要思路">主要思路</h3>
+<ol>
+<li>
+<p>gateway服务退出后，需要保证仍然能够对外提供相应的接口服务；</p>
+</li>
+<li>
+<p>gateway通过docker容器方式运行，当我们停止docker容器时，需要使用 <code>docker-compose down</code> 或 <code>docker-compose stop</code> 命令结束服务。这两条命令会向容器发送系统中断信号，所以我们首先要考虑如何在容器收到结束信号时通知到服务；</p>
+</li>
+<li>
+<p>gateway服务会启动http模块、消息队列模块以及区块链模块这三部分异步任务，我们需要考虑在退出主协程时如何保证上述三个子协程处理的模块能够在处理完当前逻辑后退出；</p>
+</li>
+</ol>
+<p>我们基于上述的3个问题分别进行解决，并通过demo代码进行演示。</p>
+<h2 id="实施方案">实施方案</h2>
+<h3 id="1-负载均衡">1. 负载均衡</h3>
+<p>为了保证某个服务停止后，仍然有其他实例能够对外提供服务，我们必须要对当前服务做负载均衡，这里是让运维同事通过nginx对gateway服务做了负载。这样就能保证某个实例停服更新时，可以将外部请求负载到其他的服务实例上。</p>
+<p>通过上述三步基本能够保证优雅停机升级服务，但是在某些细节上还需要进行优化。</p>
+<h3 id="2-处理和监听系统信号">2. 处理和监听系统信号</h3>
+<p>使用 <code>docker-compose down</code> 或 <code>docker-compose stop</code> 命令进行docker容器停止，容器会收到 <code>SIGTERM</code> 中断信号，所以我们需要在服务中针对该信号进行捕捉和处理，主要处理方法如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f00">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f00">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;os/signal&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;syscall&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f00">func</span> <span style="color:#ff0">main</span>() {
+</span></span><span style="display:flex;"><span>	signals := make(<span style="color:#f00">chan</span> os.Signal, <span style="color:#f60">1</span>)
+</span></span><span style="display:flex;"><span>	signal.<span style="color:#ff0">Notify</span>(signals, syscall.SIGTERM, syscall.SIGINT)
+</span></span><span style="display:flex;"><span>	&lt;-signals
+</span></span><span style="display:flex;"><span>	<span style="color:#0f0">// do logic...
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>}
+</span></span></code></pre></div><p>开始时， <code>signals</code> 处于阻塞状态，当接收到上述<code>SIGTERM</code> 或 <code>SIGINT</code>信号后，说明运行容器要停止，进行系统退出后的逻辑处理。这里有一点需要注意，当我们运行上述命令后，容器会有默认停止的超时时间（10s），当超过该时间后系统会发送 <code>SIGKILL</code> 信号，</p>
+<p>该信号无法被捕捉，为了保证服务能够最大程度的处理完业务逻辑，我们需要在停止容器时添加超时时间的命令， 例如：<code>docker-compose down --timeout 120</code>，将最大超时时间设置为120s，当超过这个时间后才会发送 <code>SIGKILL</code> 信号。</p>
+<h3 id="3-主协程通知子协程模块">3. 主协程通知子协程模块</h3>
+<p>go提供了context包可以很好的解决该问题，当主协程启动时，我们会初始化一个<code>parent context</code>，在启动其他子模块时将<code>parent context</code>传入，当主协程退出时会向所以基于该<code>parent context</code>的<code>child context</code>发送退出信号，然后<code>child context</code>会进行退出的逻辑处理。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f00">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f00">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;sync&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f00">func</span> <span style="color:#ff0">main</span>() {
+</span></span><span style="display:flex;"><span>	wg := sync.WaitGroup{}
+</span></span><span style="display:flex;"><span>	<span style="color:#0f0">// 定义parent context
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>	ctx, _ := context.<span style="color:#ff0">WithCancel</span>(context.<span style="color:#ff0">Background</span>())
+</span></span><span style="display:flex;"><span>	wg.<span style="color:#ff0">Add</span>(<span style="color:#f60">2</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#0f0">// 将context传入子协程处理方法中
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>	<span style="color:#f00">go</span> <span style="color:#f00">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff0">childHandler_1</span>(ctx, &amp;wg)
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f00">go</span> <span style="color:#f00">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff0">childHandler_2</span>(ctx, &amp;wg)
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	wg.<span style="color:#ff0">Wait</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f00">func</span> <span style="color:#ff0">childHandler_1</span>(ctx context.Context, wg *sync.WaitGroup) {
+</span></span><span style="display:flex;"><span>	<span style="color:#f00">for</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">select</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">case</span> &lt;-ctx.<span style="color:#ff0">Done</span>():
+</span></span><span style="display:flex;"><span>			<span style="color:#f00">defer</span> wg.<span style="color:#ff0">Done</span>()
+</span></span><span style="display:flex;"><span>			<span style="color:#0f0">// quit child
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>			fmt.<span style="color:#ff0">Println</span>(<span style="color:#87ceeb">&#34;child handler 1 will quit&#34;</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#f00">return</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">default</span>:
+</span></span><span style="display:flex;"><span>			<span style="color:#0f0">// do logic...
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f00">func</span> <span style="color:#ff0">childHandler_2</span>(ctx context.Context, wg *sync.WaitGroup) {
+</span></span><span style="display:flex;"><span>	<span style="color:#f00">for</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">select</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">case</span> &lt;-ctx.<span style="color:#ff0">Done</span>():
+</span></span><span style="display:flex;"><span>			<span style="color:#f00">defer</span> wg.<span style="color:#ff0">Done</span>()
+</span></span><span style="display:flex;"><span>			<span style="color:#0f0">// quit child
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>			fmt.<span style="color:#ff0">Println</span>(<span style="color:#87ceeb">&#34;child handler 2 will quit&#34;</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#f00">return</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">default</span>:
+</span></span><span style="display:flex;"><span>			<span style="color:#0f0">// do logic...
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>结合第一步中的检测系统信号并退出机制，融合后的demo代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f00">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f00">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;os/signal&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;sync&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;syscall&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f00">func</span> <span style="color:#ff0">main</span>() {
+</span></span><span style="display:flex;"><span>	wg := sync.WaitGroup{}
+</span></span><span style="display:flex;"><span>	<span style="color:#0f0">// 定义parent context
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>	ctx, cancel := context.<span style="color:#ff0">WithCancel</span>(context.<span style="color:#ff0">Background</span>())
+</span></span><span style="display:flex;"><span>	wg.<span style="color:#ff0">Add</span>(<span style="color:#f60">2</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#0f0">// 将context传入子协程处理方法中
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>	<span style="color:#f00">go</span> <span style="color:#f00">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff0">childHandler_1</span>(ctx, &amp;wg)
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f00">go</span> <span style="color:#f00">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff0">childHandler_2</span>(ctx, &amp;wg)
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0f0">// 发送系统退出信号
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>	signals := make(<span style="color:#f00">chan</span> os.Signal, <span style="color:#f60">1</span>)
+</span></span><span style="display:flex;"><span>	signal.<span style="color:#ff0">Notify</span>(signals, syscall.SIGTERM, syscall.SIGINT)
+</span></span><span style="display:flex;"><span>	&lt;-signals
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0f0">// 通知子协程
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>	<span style="color:#ff0">cancel</span>()
+</span></span><span style="display:flex;"><span>	wg.<span style="color:#ff0">Wait</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f00">func</span> <span style="color:#ff0">childHandler_1</span>(ctx context.Context, wg *sync.WaitGroup) {
+</span></span><span style="display:flex;"><span>	<span style="color:#f00">for</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">select</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">case</span> &lt;-ctx.<span style="color:#ff0">Done</span>():
+</span></span><span style="display:flex;"><span>			<span style="color:#f00">defer</span> wg.<span style="color:#ff0">Done</span>()
+</span></span><span style="display:flex;"><span>			<span style="color:#0f0">// quit child
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>			fmt.<span style="color:#ff0">Println</span>(<span style="color:#87ceeb">&#34;child handler 1 will quit&#34;</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#f00">return</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">default</span>:
+</span></span><span style="display:flex;"><span>			<span style="color:#0f0">// do logic...
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>			fmt.<span style="color:#ff0">Println</span>(<span style="color:#87ceeb">&#34;handler1 do logic...&#34;</span>)
+</span></span><span style="display:flex;"><span>			time.<span style="color:#ff0">Sleep</span>(<span style="color:#f60">5</span> * time.Second)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f00">func</span> <span style="color:#ff0">childHandler_2</span>(ctx context.Context, wg *sync.WaitGroup) {
+</span></span><span style="display:flex;"><span>	<span style="color:#f00">for</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">select</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">case</span> &lt;-ctx.<span style="color:#ff0">Done</span>():
+</span></span><span style="display:flex;"><span>			<span style="color:#f00">defer</span> wg.<span style="color:#ff0">Done</span>()
+</span></span><span style="display:flex;"><span>			<span style="color:#0f0">// quit child
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>			fmt.<span style="color:#ff0">Println</span>(<span style="color:#87ceeb">&#34;child handler 2 will quit&#34;</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#f00">return</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">default</span>:
+</span></span><span style="display:flex;"><span>			<span style="color:#0f0">// do logic...
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>			fmt.<span style="color:#ff0">Println</span>(<span style="color:#87ceeb">&#34;handler2 do logic...&#34;</span>)
+</span></span><span style="display:flex;"><span>			time.<span style="color:#ff0">Sleep</span>(<span style="color:#f60">15</span> * time.Second)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="4-细节优化">4. 细节优化</h3>
+<h4 id="q1-处于停服更新的http服务如何保证处理完成内部http逻辑的同时不再接受新的外部http请求">Q1: 处于停服更新的http服务如何保证处理完成内部http逻辑的同时不再接受新的外部http请求？</h4>
+<p>我们通过nginx对服务进行了负载，当前的负载策略为1/n , n为当前负载数，如果我们有两个负载，那么每个负载接收处理请求的概率时50%，并且nginx通过访问配置负载的ip:port确定能否路由转发request。</p>
+<p>我们需要在停止http服务时，保证其ip:port不再对外提供服务，而且还需要继续处理当前未完成的业务逻辑处理。<code>go 1.8</code>后，<code>net/http</code>包中的 <code>Shutdown(ctx)</code> 方法能够满足上述需求，核心代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f00">package</span> api
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f00">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;errors&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;gateway/lib/config&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;gateway/lib/log&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;os/signal&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;syscall&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f00">func</span> <span style="color:#ff0">Run2</span>(ctx context.Context) <span style="color:#ee82ee">error</span> {
+</span></span><span style="display:flex;"><span>	server := &amp;http.Server{
+</span></span><span style="display:flex;"><span>		Addr:    fmt.<span style="color:#ff0">Sprintf</span>(<span style="color:#87ceeb">&#34;%s:%d&#34;</span>, config.<span style="color:#ff0">GetConfigInstance</span>().Service.Ip, config.<span style="color:#ff0">GetConfigInstance</span>().Service.Port),
+</span></span><span style="display:flex;"><span>		Handler: router.<span style="color:#ff0">Init</span>(),
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#0f0">// 启动http server
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>	<span style="color:#f00">go</span> <span style="color:#f00">func</span>() {
+</span></span><span style="display:flex;"><span>		err := server.<span style="color:#ff0">ListenAndServe</span>()
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">if</span> err != <span style="color:#f00">nil</span> &amp;&amp; !errors.<span style="color:#ff0">Is</span>(err, http.ErrServerClosed) {
+</span></span><span style="display:flex;"><span>			log.<span style="color:#ff0">SystemLog</span>().<span style="color:#ff0">Error</span>(<span style="color:#87ceeb">&#34;server quit with unexpected signal...&#34;</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	&lt;-ctx.<span style="color:#ff0">Done</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#ff0">Println</span>(<span style="color:#87ceeb">&#34;wait api server shutdown graceful&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f00">return</span> server.<span style="color:#ff0">Shutdown</span>(context.<span style="color:#ff0">Background</span>())
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>注意，我们不能直接将从 <code>parent context</code> 中派生的 <code>context</code> 传入到<code>Shutdown(ctx)</code>方法中，需要重新创建该方法所需的上下文参数，用于判断某个http逻辑是否处理完成。</strong></p>
+<h4 id="q2-对当前子协程的创建和回收进行封装">Q2: 对当前子协程的创建和回收进行封装？</h4>
+<p>为了抽象处理子协程模块的不同方法，封装了类似于worker pool处理方式的模块，统一对子模块进行添加和回收。目前封装比较简单，主要针对 <code>创建</code>、<code>启动</code>、<code>停止</code> 关键步骤进行了封装，基于<code>woker pool</code>对象进行所有逻辑的处理。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f00">package</span> utils
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f00">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#87ceeb">&#34;sync&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f00">type</span> WorkerPool <span style="color:#f00">struct</span> {
+</span></span><span style="display:flex;"><span>	tasks   <span style="color:#f00">chan</span> <span style="color:#f00">func</span>(ctx context.Context) <span style="color:#ee82ee">error</span> <span style="color:#0f0">// 处理的任务方法
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>	wg      sync.WaitGroup                       <span style="color:#0f0">// 处理子协程
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>	ctx     context.Context                      <span style="color:#0f0">// 全文的上下文
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>	cancel  context.CancelFunc                   <span style="color:#0f0">// 取消函数
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>	stopped <span style="color:#ee82ee">bool</span>                                 <span style="color:#0f0">// 标识worker pool是否已经停止
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#0f0">// 初始化worker pool
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span><span style="color:#f00">func</span> <span style="color:#ff0">NewWorkerPool</span>(size <span style="color:#ee82ee">int</span>, ctx context.Context, cancelf context.CancelFunc) *WorkerPool {
+</span></span><span style="display:flex;"><span>	<span style="color:#f00">return</span> &amp;WorkerPool{
+</span></span><span style="display:flex;"><span>		tasks:  make(<span style="color:#f00">chan</span> <span style="color:#f00">func</span>(ctx context.Context) <span style="color:#ee82ee">error</span>, size),
+</span></span><span style="display:flex;"><span>		ctx:    ctx,
+</span></span><span style="display:flex;"><span>		cancel: cancelf,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#0f0">// 启动任务池
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span><span style="color:#f00">func</span> (wp *WorkerPool) <span style="color:#ff0">Start</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#f00">for</span> i := <span style="color:#f60">0</span>; i &lt; cap(wp.tasks); i++ {
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">go</span> <span style="color:#f00">func</span>(num <span style="color:#ee82ee">int</span>) {
+</span></span><span style="display:flex;"><span>			<span style="color:#f00">for</span> task := <span style="color:#f00">range</span> wp.tasks {
+</span></span><span style="display:flex;"><span>				wp.wg.<span style="color:#ff0">Add</span>(<span style="color:#f60">1</span>)
+</span></span><span style="display:flex;"><span>				<span style="color:#ff0">task</span>(wp.ctx)
+</span></span><span style="display:flex;"><span>				wp.wg.<span style="color:#ff0">Done</span>()
+</span></span><span style="display:flex;"><span>				fmt.<span style="color:#ff0">Printf</span>(<span style="color:#87ceeb">&#34;worker %v done\n&#34;</span>, num)
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}(i)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#0f0">// 停止任务池
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span><span style="color:#f00">func</span> (wp *WorkerPool) <span style="color:#ff0">Stop</span>() {
+</span></span><span style="display:flex;"><span>	wp.<span style="color:#ff0">cancel</span>()
+</span></span><span style="display:flex;"><span>	wp.wg.<span style="color:#ff0">Wait</span>()
+</span></span><span style="display:flex;"><span>	wp.stopped = <span style="color:#f00">true</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#0f0">// 提交任务
+</span></span></span><span style="display:flex;"><span><span style="color:#0f0"></span><span style="color:#f00">func</span> (wp *WorkerPool) <span style="color:#ff0">Submit</span>(task <span style="color:#f00">func</span>(ctx context.Context) <span style="color:#ee82ee">error</span>) <span style="color:#ee82ee">error</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#f00">if</span> wp.stopped {
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">return</span> fmt.<span style="color:#ff0">Errorf</span>(<span style="color:#87ceeb">&#34;worker pool has been stopped&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#f00">select</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#f00">case</span> wp.tasks &lt;- task:
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">return</span> <span style="color:#f00">nil</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f00">case</span> &lt;-wp.ctx.<span style="color:#ff0">Done</span>():
+</span></span><span style="display:flex;"><span>		<span style="color:#f00">return</span> wp.ctx.<span style="color:#ff0">Err</span>()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="测试验证">测试验证</h3>
+<p>为了验证上述思路是否正确，我们从如下几个方面进行验证：</p>
+<ul>
+<li>
+<p>服务停止更新，其他服务能够正常对外提供服务（包括http、消息队列、区块链监听）；</p>
+</li>
+<li>
+<p>服务停止后，http请求、消息队列、区块链监听等逻辑能够处理完当前逻辑后才退出；</p>
+</li>
+<li>
+<p>服务停止后，保证整个优雅停止过程中，数据能够准确落库和上链；</p>
+</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>

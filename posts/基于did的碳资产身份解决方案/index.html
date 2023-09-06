@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="0.背景 基于中心化或联邦化的凭证认证，用户的任何行为都会被记录，同时存在泄漏风险，对于用户而言是没有任何隐私； 各不同中心机构对于凭证的实现依照各自的标准进行，缺乏统一标准规范； 基于DID凭证认证，各参与方依照数学规范实现相应模型，通过密码学原理进行认证，更容易形成通用性的标准和规范； 以下方案基于用户持用碳资产凭证享受某种权益的过程，具体示例场景是用户产生过1t的碳减排可以享受某植物园门票打折优惠；
+参与方：
+碳资产运营方 用户 植物园 1.传统的碳资产权益凭证证明过程 碳资产运营机构根据用户碳资产的相关信息生成用户的碳资产凭证； 用户向植物园出示该电子凭证，植物园会对电子凭证进行核销，本质是调用颁发方（碳资产运营机构）的相应接口； 碳资产运营机构会根据用户存储在中心的信息返回结果； 植物园会根据实际结果决定用户是否享有打折权益； 2.基于DID的碳资产权益凭证证明过程 碳资产运营方根据用户的did信息和平台维护的碳资产相关信息为用户颁发可验证凭证； 用户持有该凭证到相应的验证机构进行凭证验证并享受相应的权益； 植物园根据用户提供的凭证进行验证，这部分验证一般不会涉及同颁发方的交互，会基于提前制定的验证规则进行验证； 植物园会根据实际结果决定用户是否享有打折权益； 3.方案对比 方案名称 隐私性 开发成本 通用性 中心化 ❌ ✅ ❌ DID ✅ ❌ ✅ 中心化 优势： 技术实现和验证逻辑方案成熟，目前大部分的电子凭证都是通过这种形式实现； 劣势： 用户隐私无法得到有效保证，用户何时、何地使用凭证都可能被中心机构所记录； 通过中心化机构数据正确性保证凭证内容不可篡改，并且强依赖于中心机构的服务稳定性； 不同中心针对同类型的证明实现形式各不相同，上述例子中如果是不同主体的碳资产运营机构，那么对于碳资产凭证的实现上肯定各不相同，缺乏统一标准； DID 优势： 隐私性，凭证颁发成功后就会通过用户手中进行流转，即用户何时、何地去进行凭证的验证中心机构都无法获知（不同业务场景存在不同情况）； 颁发的可验证凭证基于数字签名或其他数学方法的原理，能够保证凭证内容的不可篡改性； 能够实现一次颁发，处处使用，基于W3C的统一规范实现模型，有利于不同机构凭证形成统一规范； 劣势： 基于did的凭证验证方案技术实现上较为复杂，涉及到did注册表、验证服务、用户数字钱包等功能； did的方案目前还处于理论阶段，尤其是在不同did主体进行交互验证的方面缺乏标准化的工作； 总结 did的凭证解决方案中能够更好的保护用户隐私性，同时其涉及到较多的技术手段，带来了更多的开发和维护成本。
+4.DID方案实现 碳资产运营机构、用户、植物园三方分别要先向did管理机构申请和生成did及对应的did doc； did和did doc是对应存在的，did doc是对did主体信息的描述。不同did主体之间能够通过阅读对方（这个阅读一般指机器意义上的识别）did doc获取有用身份代表信息，此处的例子就是did主体的公钥信息及对应的加密算法。
+运营方：
+did:example:yyf0001xxx
+did doc:
+{ &#34;@context&#34;: &#34;https://test.cn&#34;, &#34;id&#34;: &#34;did:example:yyf0001xxx&#34;, &#34;authentication&#34;: [{ &#34;id&#34;: &#34;did:example:yyf0001xxx#keys-1&#34;, &#34;type&#34;: &#34;Ed255519VerificationKey2018&#34;, &#34;controller&#34;: &#34;did:example:yyf0001xxx&#34;, &#34;publicKeyBase58&#34;: &#34;H3xxxslkMv5423MJHjnamjxiklijinklkjijkew&#34; }], &#34;service&#34;: [{ &#34;id&#34;: &#34;did:example:yyf0001xxx&#34;, &#34;type&#34;: &#34;VerifiableCredentialService&#34;, &#34;serviceEndpoint&#34;: &#34;https://test.">  
+
+  <title>
+    
+      基于DID的碳资产身份解决方案
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.10776b9b86bf7e3aca232a6c5e4fbdc3baacf45c0cc3a1802995836aa1689368e8fadebd3e46fdc9ad87eab1f834f5bbb28dbb2b23fea73ae3e57c258caef3bd.css" integrity="sha512-EHdrm4a/fjrKIypsXk&#43;9w7qs9FwMw6GAKZWDaqFok2jo&#43;t69Pkb9ya2H6rH4NPW7so27KyP&#43;pzrj5XwljK7zvQ==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+<a href="/">..</a>
+
+<article>
+    <p class="post-meta">
+        <time datetime="2023-09-04 00:00:00 &#43;0000 UTC">
+            2023-09-04
+        </time>
+    </p>
+
+    <h1>基于DID的碳资产身份解决方案</h1>
+
+    
+
+    <h2 id="0背景">0.背景</h2>
+<ol>
+<li>基于中心化或联邦化的凭证认证，用户的任何行为都会被记录，同时存在泄漏风险，对于用户而言是没有任何隐私；</li>
+<li>各不同中心机构对于凭证的实现依照各自的标准进行，缺乏统一标准规范；</li>
+<li>基于DID凭证认证，各参与方依照数学规范实现相应模型，通过密码学原理进行认证，更容易形成通用性的标准和规范；</li>
+</ol>
+<p>以下方案基于用户持用碳资产凭证享受某种权益的过程，具体示例场景是用户产生过1t的碳减排可以享受某植物园门票打折优惠；</p>
+<p>参与方：</p>
+<ol>
+<li>碳资产运营方</li>
+<li>用户</li>
+<li>植物园</li>
+</ol>
+<h2 id="1传统的碳资产权益凭证证明过程">1.传统的碳资产权益凭证证明过程</h2>
+<p><img src="http://s0fss18fc.bkt.clouddn.com/didimg_4.png?e=1693790563&amp;token=ILZg7lYUjoTfWuZ_WkCq5sUkEjy2kj7ysfsC4n5r:6F5Y29LF-GModLe8ZAS2VV_p0hs=" alt="img_4.png"></p>
+<ol>
+<li>碳资产运营机构根据用户碳资产的相关信息生成用户的碳资产凭证；</li>
+<li>用户向植物园出示该电子凭证，植物园会对电子凭证进行核销，本质是调用颁发方（碳资产运营机构）的相应接口；</li>
+<li>碳资产运营机构会根据用户存储在中心的信息返回结果；</li>
+<li>植物园会根据实际结果决定用户是否享有打折权益；</li>
+</ol>
+<h2 id="2基于did的碳资产权益凭证证明过程">2.基于DID的碳资产权益凭证证明过程</h2>
+<p><img src="http://s0fss18fc.bkt.clouddn.com/didimg_1.png?e=1693790549&amp;token=ILZg7lYUjoTfWuZ_WkCq5sUkEjy2kj7ysfsC4n5r:IfifiNymvYMlvVLh6Si_RYPwrt0=" alt="img_1.png"></p>
+<ol>
+<li>碳资产运营方根据用户的did信息和平台维护的碳资产相关信息为用户颁发可验证凭证；</li>
+<li>用户持有该凭证到相应的验证机构进行凭证验证并享受相应的权益；</li>
+<li>植物园根据用户提供的凭证进行验证，这部分验证一般不会涉及同颁发方的交互，会基于提前制定的验证规则进行验证；</li>
+<li>植物园会根据实际结果决定用户是否享有打折权益；</li>
+</ol>
+<h2 id="3方案对比">3.方案对比</h2>
+<table>
+<thead>
+<tr>
+<th>方案名称</th>
+<th>隐私性</th>
+<th>开发成本</th>
+<th>通用性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>中心化</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>DID</td>
+<td>✅</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h3 id="中心化">中心化</h3>
+<ul>
+<li>优势：
+<ul>
+<li>技术实现和验证逻辑方案成熟，目前大部分的电子凭证都是通过这种形式实现；</li>
+</ul>
+</li>
+<li>劣势：
+<ul>
+<li>用户隐私无法得到有效保证，用户何时、何地使用凭证都可能被中心机构所记录；</li>
+<li>通过中心化机构数据正确性保证凭证内容不可篡改，并且强依赖于中心机构的服务稳定性；</li>
+<li>不同中心针对同类型的证明实现形式各不相同，上述例子中如果是不同主体的碳资产运营机构，那么对于碳资产凭证的实现上肯定各不相同，缺乏统一标准；</li>
+</ul>
+</li>
+</ul>
+<h3 id="did">DID</h3>
+<ul>
+<li>优势：
+<ul>
+<li>隐私性，凭证颁发成功后就会通过用户手中进行流转，即用户何时、何地去进行凭证的验证中心机构都无法获知（不同业务场景存在不同情况）；</li>
+<li>颁发的可验证凭证基于数字签名或其他数学方法的原理，能够保证凭证内容的不可篡改性；</li>
+<li>能够实现一次颁发，处处使用，基于W3C的统一规范实现模型，有利于不同机构凭证形成统一规范；</li>
+</ul>
+</li>
+<li>劣势：
+<ul>
+<li>基于did的凭证验证方案技术实现上较为复杂，涉及到did注册表、验证服务、用户数字钱包等功能；</li>
+<li>did的方案目前还处于理论阶段，尤其是在不同did主体进行交互验证的方面缺乏标准化的工作；</li>
+</ul>
+</li>
+</ul>
+<h3 id="总结">总结</h3>
+<p>did的凭证解决方案中能够更好的保护用户隐私性，同时其涉及到较多的技术手段，带来了更多的开发和维护成本。</p>
+<h2 id="4did方案实现">4.DID方案实现</h2>
+<ol>
+<li>碳资产运营机构、用户、植物园三方分别要先向did管理机构申请和生成did及对应的did doc；</li>
+</ol>
+<blockquote>
+<p>did和did doc是对应存在的，did doc是对did主体信息的描述。不同did主体之间能够通过阅读对方（这个阅读一般指机器意义上的识别）did doc获取有用身份代表信息，此处的例子就是did主体的公钥信息及对应的加密算法。</p>
+</blockquote>
+<p>运营方：</p>
+<p><code>did:example:yyf0001xxx</code></p>
+<p>did doc:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;@context&#34;: <span style="color:#87ceeb">&#34;https://test.cn&#34;</span>,
+</span></span><span style="display:flex;"><span>  &#34;id&#34;: <span style="color:#87ceeb">&#34;did:example:yyf0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>  &#34;authentication&#34;: [{
+</span></span><span style="display:flex;"><span>    &#34;id&#34;: <span style="color:#87ceeb">&#34;did:example:yyf0001xxx#keys-1&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;type&#34;: <span style="color:#87ceeb">&#34;Ed255519VerificationKey2018&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;controller&#34;: <span style="color:#87ceeb">&#34;did:example:yyf0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;publicKeyBase58&#34;: <span style="color:#87ceeb">&#34;H3xxxslkMv5423MJHjnamjxiklijinklkjijkew&#34;</span>
+</span></span><span style="display:flex;"><span>  }],
+</span></span><span style="display:flex;"><span>  &#34;service&#34;: [{
+</span></span><span style="display:flex;"><span>    &#34;id&#34;: <span style="color:#87ceeb">&#34;did:example:yyf0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;type&#34;: <span style="color:#87ceeb">&#34;VerifiableCredentialService&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;serviceEndpoint&#34;: <span style="color:#87ceeb">&#34;https://test.cn&#34;</span>
+</span></span><span style="display:flex;"><span>  }]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>用户：</p>
+<p><code>did:example:user0001xxx</code></p>
+<p>did doc:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;@context&#34;: <span style="color:#87ceeb">&#34;https://test-user001.cn&#34;</span>,
+</span></span><span style="display:flex;"><span>  &#34;id&#34;: <span style="color:#87ceeb">&#34;did:example:user0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>  &#34;authentication&#34;: [{
+</span></span><span style="display:flex;"><span>    &#34;id&#34;: <span style="color:#87ceeb">&#34;did:example:user0001xxx#keys-1&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;type&#34;: <span style="color:#87ceeb">&#34;Ed255519VerificationKey2018&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;controller&#34;: <span style="color:#87ceeb">&#34;did:example:user0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;publicKeyBase58&#34;: <span style="color:#87ceeb">&#34;H3xxxslkMv5423MJHjnamjxiklijinklkjijkew&#34;</span>
+</span></span><span style="display:flex;"><span>  }],
+</span></span><span style="display:flex;"><span>  &#34;service&#34;: [{
+</span></span><span style="display:flex;"><span>    &#34;id&#34;: <span style="color:#87ceeb">&#34;did:example:user0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;type&#34;: <span style="color:#87ceeb">&#34;VerifiableCredentialService&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;serviceEndpoint&#34;: <span style="color:#87ceeb">&#34;https://test-user001.cn&#34;</span>
+</span></span><span style="display:flex;"><span>  }]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>植物园：</p>
+<p><code>did:example:zwy0001xxx</code></p>
+<p>did doc:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;@context&#34;: <span style="color:#87ceeb">&#34;https://test-zwy001.cn&#34;</span>,
+</span></span><span style="display:flex;"><span>  &#34;id&#34;: <span style="color:#87ceeb">&#34;did:example:zwy0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>  &#34;authentication&#34;: [{
+</span></span><span style="display:flex;"><span>    &#34;id&#34;: <span style="color:#87ceeb">&#34;did:example:zwy0001xxx#keys-1&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;type&#34;: <span style="color:#87ceeb">&#34;Ed255519VerificationKey2018&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;controller&#34;: <span style="color:#87ceeb">&#34;did:example:zwy0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;publicKeyBase58&#34;: <span style="color:#87ceeb">&#34;H3xxxslkMv5423MJHjnamjxiklijinklkjijkew&#34;</span>
+</span></span><span style="display:flex;"><span>  }],
+</span></span><span style="display:flex;"><span>  &#34;service&#34;: [{
+</span></span><span style="display:flex;"><span>    &#34;id&#34;: <span style="color:#87ceeb">&#34;did:example:zwy0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;type&#34;: <span style="color:#87ceeb">&#34;VerifiableCredentialService&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;serviceEndpoint&#34;: <span style="color:#87ceeb">&#34;https://test-zwy001.cn&#34;</span>
+</span></span><span style="display:flex;"><span>  }]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ol start="2">
+<li>运营方为用户颁发碳资产可验证凭证</li>
+</ol>
+<blockquote>
+<p>我们可以简单理解可验证凭证同目前物理凭证或电子凭证等效，例如实体证明：驾照、毕业证等，电子证明例如：电子驾照、电子毕业证等，包括可验证凭证在内的这三种不同类型的证明都是为了证明持有证明的实体是否满足某种条件。</p>
+<p>这里的碳资产可验证凭证（vc）就是为了证明用户确实产生过相应数量的碳减排。</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    &#34;@context&#34;: [
+</span></span><span style="display:flex;"><span>        <span style="color:#87ceeb">&#34;https://www.schema.org&#34;</span>
+</span></span><span style="display:flex;"><span>    ],
+</span></span><span style="display:flex;"><span>    &#34;id&#34;: <span style="color:#87ceeb">&#34;https://user0001.cn&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;type&#34;: [
+</span></span><span style="display:flex;"><span>        <span style="color:#87ceeb">&#34;VerifiableCrddential&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#87ceeb">&#34;CarbonIntegral&#34;</span>
+</span></span><span style="display:flex;"><span>    ],
+</span></span><span style="display:flex;"><span>    &#34;credentialSubject&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;id&#34;: <span style="color:#87ceeb">&#34;did:example:user0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;carbonIntegralAchievement&#34;: <span style="color:#87ceeb">&#34;Carbon completion reaches 1 ton&#34;</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    &#34;issuer&#34;:<span style="color:#87ceeb">&#34;did:example:yyf0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;issueanceDate&#34;:<span style="color:#87ceeb">&#34;2023-06-06T18:30:00Z&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;expirationDate&#34;:<span style="color:#87ceeb">&#34;2024-06-06T18:30:00Z&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;proof&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;type&#34;:<span style="color:#87ceeb">&#34;Ed255519VerificationKey2018&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;created&#34;:<span style="color:#87ceeb">&#34;2023-06-06T18:30:00Z&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;verificationMethod&#34;:<span style="color:#87ceeb">&#34;did:example:yyf0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;noce&#34;:<span style="color:#87ceeb">&#34;7857e689-e949-44fb-bd65-22a2b32244d9&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;signatureValue&#34;:<span style="color:#87ceeb">&#34;Li9jbWMgY2xpZW50IGNvbnRyYWN0IHVzZXIgdXBncmFkZSAtLWNvbnRyYWN0LW5hbWU9Y2FyYm9uX2ludGVncmFsIC0tcnVudGltZS10eXBlPURPQ0tFUl9HTyAtLWJ5dGUtY29kZS1wYXRoPS4vY29udHJhY3QvdjIzMS9jYXJib25faW50ZWdyYWwuN3ogLS12ZXJzaW9uPTIuMC4xIC0tc2RrLWNvbmYtcGF0aD0uL3Nkay55bWwgLS1hZG1pbi1rZXktZmlsZS1wYXRocz0uL3NoLmxjYWdvLmNlci5vcmcvdXNlci9hZG1pbjEvYWRtaW4xLnRscy5rZXkgLS1hZG1pbi1jcnQtZmlsZS1wYXRocz0uL3NoLmxjYWdvLmNlci5vcmcvdXNlci9hZG1pbjEvYWRtaW4xLnRscy5jcnQgLS1zeW5jLXJlc3VsdD10cnVlIC0tcGFyYW1zPSJ7fSI=&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ol start="3">
+<li>植物园验证用户凭证</li>
+</ol>
+<blockquote>
+<p>这里我们要引入一个新的概念叫做：可验证表述（vp），可以简单理解为附上持有者数字签名的可验证凭证，验证者通过可验证表述上的数字签名确认持有者身份，然后进行下一步的验证凭证内容的工作。</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    &#34;id&#34;: <span style="color:#87ceeb">&#34;did:example:user0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;type&#34;: [
+</span></span><span style="display:flex;"><span>        <span style="color:#87ceeb">&#34;VerifiablePresentation&#34;</span>
+</span></span><span style="display:flex;"><span>    ],
+</span></span><span style="display:flex;"><span>    &#34;credential&#34;: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            &#34;@context&#34;: [
+</span></span><span style="display:flex;"><span>                <span style="color:#87ceeb">&#34;https://www.schema.org&#34;</span>
+</span></span><span style="display:flex;"><span>            ],
+</span></span><span style="display:flex;"><span>            &#34;id&#34;: <span style="color:#87ceeb">&#34;https://user0001.cn&#34;</span>,
+</span></span><span style="display:flex;"><span>            &#34;type&#34;: [
+</span></span><span style="display:flex;"><span>                <span style="color:#87ceeb">&#34;VerifiableCrddential&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#87ceeb">&#34;CarbonIntegral&#34;</span>
+</span></span><span style="display:flex;"><span>            ],
+</span></span><span style="display:flex;"><span>            &#34;credentialSubject&#34;: {
+</span></span><span style="display:flex;"><span>                &#34;id&#34;: <span style="color:#87ceeb">&#34;did:example:user0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>                &#34;carbonIntegralAchievement&#34;: <span style="color:#87ceeb">&#34;Carbon completion reaches 1 ton&#34;</span>
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            &#34;issuer&#34;: <span style="color:#87ceeb">&#34;did:example:yyf0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>            &#34;issueanceDate&#34;: <span style="color:#87ceeb">&#34;2023-06-06T18:30:00Z&#34;</span>,
+</span></span><span style="display:flex;"><span>            &#34;expirationDate&#34;: <span style="color:#87ceeb">&#34;2024-06-06T18:30:00Z&#34;</span>,
+</span></span><span style="display:flex;"><span>            &#34;proof&#34;: {
+</span></span><span style="display:flex;"><span>                &#34;type&#34;: <span style="color:#87ceeb">&#34;Ed255519VerificationKey2018&#34;</span>,
+</span></span><span style="display:flex;"><span>                &#34;created&#34;: <span style="color:#87ceeb">&#34;2023-06-06T18:30:00Z&#34;</span>,
+</span></span><span style="display:flex;"><span>                &#34;verificationMethod&#34;: <span style="color:#87ceeb">&#34;did:example:yyf0001xxx&#34;</span>,
+</span></span><span style="display:flex;"><span>                &#34;noce&#34;: <span style="color:#87ceeb">&#34;7857e689-e949-44fb-bd65-22a2b32244d9&#34;</span>,
+</span></span><span style="display:flex;"><span>                &#34;signatureValue&#34;: <span style="color:#87ceeb">&#34;Li9jbWMgY2xpZW50IGNvbnRyYWN0IHVzZXIgdXBncmFkZSAtLWNvbnRyYWN0LW5hbWU9Y2FyYm9uX2ludGVncmFsIC0tcnVudGltZS10eXBlPURPQ0tFUl9HTyAtLWJ5dGUtY29kZS1wYXRoPS4vY29udHJhY3QvdjIzMS9jYXJib25faW50ZWdyYWwuN3ogLS12ZXJzaW9uPTIuMC4xIC0tc2RrLWNvbmYtcGF0aD0uL3Nkay55bWwgLS1hZG1pbi1rZXktZmlsZS1wYXRocz0uL3NoLmxjYWdvLmNlci5vcmcvdXNlci9hZG1pbjEvYWRtaW4xLnRscy5rZXkgLS1hZG1pbi1jcnQtZmlsZS1wYXRocz0uL3NoLmxjYWdvLmNlci5vcmcvdXNlci9hZG1pbjEvYWRtaW4xLnRscy5jcnQgLS1zeW5jLXJlc3VsdD10cnVlIC0tcGFyYW1zPSJ7fSI=&#34;</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ],
+</span></span><span style="display:flex;"><span>    &#34;proof&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;type&#34;: <span style="color:#87ceeb">&#34;Ed255519VerificationKey2018&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;created&#34;: <span style="color:#87ceeb">&#34;2023-06-07T18:30:00Z&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;verificationMethod&#34;: <span style="color:#87ceeb">&#34;did:example:user0001xxx#keys-1&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;noce&#34;: <span style="color:#87ceeb">&#34;7857e689-e949-44fb-bd65-22a2b32244xx&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;signatureValue&#34;: <span style="color:#87ceeb">&#34;Li9jbWMgY2xpZW50IGNvbnRyYWN0IHVzZXIgdXBncmFkZSAtLWNvbnRyYWN0LW5hbWU9Y2FyYm9uX2ludGVncmFsIC0tcnVudGltZS10eXBlPURPQ0tFUl9HTyAtLWJ5dGUtY29kZS1wYXRoPS4vY29udHJhY3QvdjIzMS9jYXJib25faW50ZWdyYWwuN3ogLS12ZXJzaW9uPTIuMC4xIC0tc2RrLWNvbmYtcGF0aD0uL3Nkay55bWwgLS1hZG1pbi1rZXktZmlsZS1wYXRocz0uL3NoLmxjYWdvLmNlci5vcmcvdXNlci9hZG1pbjEvYWRtaW4xLnRscy5rZXkgLS1hZG1pbi1jcnQtZmlsZS1wYXRocz0uL3NoLmxjYWdvLmNlci5vcmcvdXNlci9hZG1pbjEvYWRtaW4xLnRscy5jcnQgLS1zeW5jLXJlc3VsdD10cnVlIC0tcGFyYW1zPSJ7fSI=&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>验证过程1：验证持有者身份和凭证在用户提交后没有没篡改过
+<ul>
+<li>验证者首先验证vp中的<code>proof</code>结构信息，通过<code>proof</code>中的<code>verificationMethod</code>获取did注册表中（这里是区块链）上的加密密钥信息，然后对<code>signatureValue</code>字段内容进行解密，得到解密内容<code>vpHash01</code>;</li>
+<li>解密成功，证明vp持有者的身份是没有问题；</li>
+<li>通过相同的hash算法对vp中<code>credential</code>进行hash运算得到<code>vpHash02</code>，验证<code>vpHash01</code>同<code>vpHash02</code>的内容是否相同，若相同则证明内容没有没篡改过；</li>
+</ul>
+</li>
+<li>验证过程2：验证颁发者身份和凭证内容在颁发后没有被篡改过
+<ul>
+<li>验证者会首先验证<code>credential.proof</code>结构信息，通过<code>proof</code>中的<code>verificationMethod</code>获取did注册表中（这里是区块链）上的加密密钥信息，然后对<code>signatureValue</code>字段内容进行解密，得到解密内容<code>vcHash01</code>;</li>
+<li>解密成功，证明vc颁发者的身份是没有问题的，这里还需要验证颁发者的did是验证方信任的主体信息，这里可以通过引入可信验证方服务进行；</li>
+<li>通过相同的hash算法对<code>vp.credential</code>进行hash运算得到<code>vcHash02</code>，验证<code>vcHash01</code>同<code>vcHash02</code>的内容是否相同，若相同则证明内容没有没篡改过；</li>
+<li>根据<code>credential.credentialSubject</code>中内容确认用户是满足碳减排量条件；</li>
+</ul>
+</li>
+</ul>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
