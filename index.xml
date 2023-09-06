@@ -40,5 +40,4 @@ gateway服务会启动http模块、消息队列模块以及区块链模块这三
 通过上述三步基本能够保证优雅停机升级服务，但是在某些细节上还需要进行优化。
 2. 处理和监听系统信号 使用 docker-compose down 或 docker-compose stop 命令进行docker容器停止，容器会收到 SIGTERM 中断信号，所以我们需要在服务中针对该信号进行捕捉和处理，主要处理方法如下：
 package main import ( &amp;#34;os&amp;#34; &amp;#34;os/signal&amp;#34; &amp;#34;syscall&amp;#34; ) func main() { signals := make(chan os.Signal, 1) signal.Notify(signals, syscall.SIGTERM, syscall.SIGINT) &amp;lt;-signals // do logic... } 开始时， signals 处于阻塞状态，当接收到上述SIGTERM 或 SIGINT信号后，说明运行容器要停止，进行系统退出后的逻辑处理。这里有一点需要注意，当我们运行上述命令后，容器会有默认停止的超时时间（10s），当超过该时间后系统会发送 SIGKILL 信号，
-该信号无法被捕捉，为了保证服务能够最大程度的处理完业务逻辑，我们需要在停止容器时添加超时时间的命令， 例如：docker-compose down --timeout 120，将最大超时时间设置为120s，当超过这个时间后才会发送 SIGKILL 信号。</description></item><item><title>无题</title><link>https://liwh1227.github.io/posts/%E8%BF%99%E6%98%AF%E4%B8%80%E4%B8%AA%E6%B5%8B%E8%AF%95blog/</link><pubDate>Mon, 31 Jul 2023 00:00:00 +0000</pubDate><guid>https://liwh1227.github.io/posts/%E8%BF%99%E6%98%AF%E4%B8%80%E4%B8%AA%E6%B5%8B%E8%AF%95blog/</guid><description>开始 some thing is ok
-第一章节 第二章节 结束 结束了，一切都结束了额。</description></item></channel></rss>
+该信号无法被捕捉，为了保证服务能够最大程度的处理完业务逻辑，我们需要在停止容器时添加超时时间的命令， 例如：docker-compose down --timeout 120，将最大超时时间设置为120s，当超过这个时间后才会发送 SIGKILL 信号。</description></item></channel></rss>
