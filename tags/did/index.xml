@@ -1,42 +1,14 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>did on liweihang&#39;s blog</title>
-    <link>https://liwh1227.github.io/tags/did/</link>
-    <description>Recent content in did on liweihang&#39;s blog</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Mon, 04 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://liwh1227.github.io/tags/did/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>基于DID的碳资产身份解决方案</title>
-      <link>https://liwh1227.github.io/posts/%E5%9F%BA%E4%BA%8Edid%E7%9A%84%E7%A2%B3%E8%B5%84%E4%BA%A7%E8%BA%AB%E4%BB%BD%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</link>
-      <pubDate>Mon, 04 Sep 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://liwh1227.github.io/posts/%E5%9F%BA%E4%BA%8Edid%E7%9A%84%E7%A2%B3%E8%B5%84%E4%BA%A7%E8%BA%AB%E4%BB%BD%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</guid>
-      <description>0.背景 基于中心化或联邦化的凭证认证，用户的任何行为都会被记录，同时存在泄漏风险，对于用户而言是没有任何隐私； 各不同中心机构对于凭证的实现依照各自的标准进行，缺乏统一标准规范； 基于DID凭证认证，各参与方依照数学规范实现相应模型，通过密码学原理进行认证，更容易形成通用性的标准和规范； 以下方案基于用户持用碳资产凭证享受某种权益的过程，具体示例场景是用户产生过1t的碳减排可以享受某植物园门票打折优惠；
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>did on liweihang's blog</title><link>https://liwh1227.github.io/tags/did/</link><description>Recent content in did on liweihang's blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 04 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://liwh1227.github.io/tags/did/index.xml" rel="self" type="application/rss+xml"/><item><title>基于DID的碳资产身份解决方案</title><link>https://liwh1227.github.io/posts/%E5%9F%BA%E4%BA%8Edid%E7%9A%84%E7%A2%B3%E8%B5%84%E4%BA%A7%E8%BA%AB%E4%BB%BD%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</link><pubDate>Mon, 04 Sep 2023 00:00:00 +0000</pubDate><guid>https://liwh1227.github.io/posts/%E5%9F%BA%E4%BA%8Edid%E7%9A%84%E7%A2%B3%E8%B5%84%E4%BA%A7%E8%BA%AB%E4%BB%BD%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</guid><description>0.背景 基于中心化或联邦化的凭证认证，用户的任何行为都会被记录，同时存在泄漏风险，对于用户而言是没有任何隐私； 各不同中心机构对于凭证的实现依照各自的标准进行，缺乏统一标准规范； 基于DID凭证认证，各参与方依照数学规范实现相应模型，通过密码学原理进行认证，更容易形成通用性的标准和规范； 以下方案基于用户持用碳资产凭证享受某种权益的过程，具体示例场景是用户产生过1t的碳减排可以享受某植物园门票打折优惠；
 参与方：
 碳资产运营方 用户 植物园 1.传统的碳资产权益凭证证明过程 碳资产运营机构根据用户碳资产的相关信息生成用户的碳资产凭证； 用户向植物园出示该电子凭证，植物园会对电子凭证进行核销，本质是调用颁发方（碳资产运营机构）的相应接口； 碳资产运营机构会根据用户存储在中心的信息返回结果； 植物园会根据实际结果决定用户是否享有打折权益； 2.基于DID的碳资产权益凭证证明过程 碳资产运营方根据用户的did信息和平台维护的碳资产相关信息为用户颁发可验证凭证； 用户持有该凭证到相应的验证机构进行凭证验证并享受相应的权益； 植物园根据用户提供的凭证进行验证，这部分验证一般不会涉及同颁发方的交互，会基于提前制定的验证规则进行验证； 植物园会根据实际结果决定用户是否享有打折权益； 3.方案对比 方案名称 隐私性 开发成本 通用性 中心化 ❌ ✅ ❌ DID ✅ ❌ ✅ 中心化 优势： 技术实现和验证逻辑方案成熟，目前大部分的电子凭证都是通过这种形式实现； 劣势： 用户隐私无法得到有效保证，用户何时、何地使用凭证都可能被中心机构所记录； 通过中心化机构数据正确性保证凭证内容不可篡改，并且强依赖于中心机构的服务稳定性； 不同中心针对同类型的证明实现形式各不相同，上述例子中如果是不同主体的碳资产运营机构，那么对于碳资产凭证的实现上肯定各不相同，缺乏统一标准； DID 优势： 隐私性，凭证颁发成功后就会通过用户手中进行流转，即用户何时、何地去进行凭证的验证中心机构都无法获知（不同业务场景存在不同情况）； 颁发的可验证凭证基于数字签名或其他数学方法的原理，能够保证凭证内容的不可篡改性； 能够实现一次颁发，处处使用，基于W3C的统一规范实现模型，有利于不同机构凭证形成统一规范； 劣势： 基于did的凭证验证方案技术实现上较为复杂，涉及到did注册表、验证服务、用户数字钱包等功能； did的方案目前还处于理论阶段，尤其是在不同did主体进行交互验证的方面缺乏标准化的工作； 总结 did的凭证解决方案中能够更好的保护用户隐私性，同时其涉及到较多的技术手段，带来了更多的开发和维护成本。
 4.DID方案实现 碳资产运营机构、用户、植物园三方分别要先向did管理机构申请和生成did及对应的did doc； did和did doc是对应存在的，did doc是对did主体信息的描述。不同did主体之间能够通过阅读对方（这个阅读一般指机器意义上的识别）did doc获取有用身份代表信息，此处的例子就是did主体的公钥信息及对应的加密算法。
 运营方：
 did:example:yyf0001xxx
 did doc:
-{ &amp;#34;@context&amp;#34;: &amp;#34;https://test.cn&amp;#34;, &amp;#34;id&amp;#34;: &amp;#34;did:example:yyf0001xxx&amp;#34;, &amp;#34;authentication&amp;#34;: [{ &amp;#34;id&amp;#34;: &amp;#34;did:example:yyf0001xxx#keys-1&amp;#34;, &amp;#34;type&amp;#34;: &amp;#34;Ed255519VerificationKey2018&amp;#34;, &amp;#34;controller&amp;#34;: &amp;#34;did:example:yyf0001xxx&amp;#34;, &amp;#34;publicKeyBase58&amp;#34;: &amp;#34;H3xxxslkMv5423MJHjnamjxiklijinklkjijkew&amp;#34; }], &amp;#34;service&amp;#34;: [{ &amp;#34;id&amp;#34;: &amp;#34;did:example:yyf0001xxx&amp;#34;, &amp;#34;type&amp;#34;: &amp;#34;VerifiableCredentialService&amp;#34;, &amp;#34;serviceEndpoint&amp;#34;: &amp;#34;https://test.</description>
-    </item>
-    
-    <item>
-      <title>分布式数字身份（下）</title>
-      <link>https://liwh1227.github.io/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E5%AD%97%E8%BA%AB%E4%BB%BD%E4%B8%8B/</link>
-      <pubDate>Fri, 01 Sep 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://liwh1227.github.io/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E5%AD%97%E8%BA%AB%E4%BB%BD%E4%B8%8B/</guid>
-      <description>0. 前言 上篇我们从DID的相关基础概念和组成进行了介绍，为了更进一步的了解DID的的概念，本篇文章从用户工作跳槽，新入职公司需要验证用户去年个人收入进行定薪水的场景展开。
+{ &amp;#34;@context&amp;#34;: &amp;#34;https://test.cn&amp;#34;, &amp;#34;id&amp;#34;: &amp;#34;did:example:yyf0001xxx&amp;#34;, &amp;#34;authentication&amp;#34;: [{ &amp;#34;id&amp;#34;: &amp;#34;did:example:yyf0001xxx#keys-1&amp;#34;, &amp;#34;type&amp;#34;: &amp;#34;Ed255519VerificationKey2018&amp;#34;, &amp;#34;controller&amp;#34;: &amp;#34;did:example:yyf0001xxx&amp;#34;, &amp;#34;publicKeyBase58&amp;#34;: &amp;#34;H3xxxslkMv5423MJHjnamjxiklijinklkjijkew&amp;#34; }], &amp;#34;service&amp;#34;: [{ &amp;#34;id&amp;#34;: &amp;#34;did:example:yyf0001xxx&amp;#34;, &amp;#34;type&amp;#34;: &amp;#34;VerifiableCredentialService&amp;#34;, &amp;#34;serviceEndpoint&amp;#34;: &amp;#34;https://test.</description></item><item><title>分布式数字身份（下）</title><link>https://liwh1227.github.io/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E5%AD%97%E8%BA%AB%E4%BB%BD%E4%B8%8B/</link><pubDate>Fri, 01 Sep 2023 00:00:00 +0000</pubDate><guid>https://liwh1227.github.io/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E5%AD%97%E8%BA%AB%E4%BB%BD%E4%B8%8B/</guid><description>0. 前言 上篇我们从DID的相关基础概念和组成进行了介绍，为了更进一步的了解DID的的概念，本篇文章从用户工作跳槽，新入职公司需要验证用户去年个人收入进行定薪水的场景展开。
 主要从场景描述、模型构建、验证过程、小结这四部分进行介绍。
 场景描述：介绍个人收入证明场景下，参与方、验证过程、并对比同传统验证方案的区别和优势； 模型构建：结合实际场景，对DID架构中所使用的DID标识、DID DOC、可验证凭证及可验证表述数据模型进行构建； 验证过程：结合实际场景和构建的数据模型，描述验证过程中数据模型各部分结构在验证过程中的作用及验证原理； 小结：对上述三个主要部分内容进行总结； 1. 场景描述 1.1 传统验证过程 新入职员工验证薪资并根据工资水平进行定薪是一个非常常见的应用场景，大致过程如下：
 入职员工通过提交上一家的工资流水证明来证明自己薪资水平，该证明一般通过向银行申请获得； 入职员工携带必要的材料去银行进行工资流水证明申请； 银行验证入职员工相关信息后，为其出示或打印工资流水证明，证明会附上银行的印章等； 入职员工携带材料去入职，并将银行开具的工资流水证明提交给新公司HR或其他相关人员； 新公司HR通过查看银行开具的工资流水证明能够获取该员工的工资收入情况并根据收入情况进行定薪； 上述过程是传统流程下的证明开具和验证流程，粗体部分是整个流程关键参与者或步骤。参与者有三个实体，分别为入职员工、银行、新公司HR，相关证明信息为工资流水证明，印章则能够反应该证明是银行所开具，证明所反映的信息为该员工去年收入情况。
 // 图
 1.2 基于DID验证过程 基于DID的验证流程的思想上同传统验证过程类似，也是根据证明信息来验证用户收入情况，不同之处在于在DID的体系下，代表实体身份的是不同的DID及对应的DID Doc，代表证明信息的是可验证凭证和可验证表述结构。
-入职员工、银行、新公司会根据常见的密钥算法生成DID标识，相应的会生成DID Doc； 入职员工通过线上或线下方式向银行申请关于工资流水的可验证凭证； 2. 模型构建 3. 验证过程 5. 小结 6. 参考 </description>
-    </item>
-    
-  </channel>
-</rss>
+入职员工、银行、新公司会根据常见的密钥算法生成DID标识，相应的会生成DID Doc； 入职员工通过线上或线下方式向银行申请关于工资流水的可验证凭证； 2. 模型构建 3. 验证过程 5. 小结 6. 参考</description></item></channel></rss>
