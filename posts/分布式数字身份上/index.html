@@ -47,7 +47,7 @@ W3C定义的可验证凭证数据模型3：
 <p>本篇内容基于W3C分布式数字身份相关调研内容，结合官方文档和调研过程中自己的一些理解进行整理，计划使用两篇文章进行描述，此为上篇，主要描述分布式数字身份的基本概念。</p>
 <h2 id="1-did">1. DID</h2>
 <p>首先，我们看下w3c关于<a href="https://www.w3.org/TR/did-core/">分布式数字身份</a>的定义：
-<img src="http://s0fss18fc.bkt.clouddn.com/did/did.png?e=1693815967&amp;token=ILZg7lYUjoTfWuZ_WkCq5sUkEjy2kj7ysfsC4n5r:cjjBPdga6jSroMXtQOAWtS-E46Q=" alt="DID的定义">
+<img src="./img-did.png" alt="DID的定义">
 大致要点如下：</p>
 <ol>
 <li>去中心化标识符（DID）是一种新型标识符，能够实现可验证的去中心化数字身份；</li>
@@ -75,7 +75,7 @@ W3C定义的可验证凭证数据模型3：
 <p><code>authentication</code>: 该字段用于确认用户对该DID的控制权，包含了与DID相关的公钥信息，用于验证DID控制器的身份和控制权。具体来说，该字段中的公钥信息可以用于验证DID控制器的数字签名，从而证明DID控制器对DID的控制权。</p>
 <h2 id="3-可验证凭证">3. 可验证凭证</h2>
 <p>如图，W3C对<a href="https://www.w3.org/TR/vc-data-model/">可验证凭证</a>定义：
-<img src="http://s0fss18fc.bkt.clouddn.com/did/vc%E5%AE%9A%E4%B9%89.png?e=1693815995&amp;token=ILZg7lYUjoTfWuZ_WkCq5sUkEjy2kj7ysfsC4n5r:ihw1TADXHHY9xD-TgE8-Z_WZtII=" alt="vc的定义"></p>
+<img src="./img-vc.png" alt="vc的定义"></p>
 <blockquote>
 <p>一个标准的数据模型和表示格式，用于加密验证数字凭证，由W3C可验证凭证规范定义。</p>
 </blockquote>
@@ -196,7 +196,7 @@ W3C定义的可验证凭证数据模型3：
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>结合VC的示例结构，我们可以看出二者不同之处在于，VP将VC作为结构中的一部分（字段 <code>verifiableCredential</code>），并且新增了基于持有者签名的<code>proof</code>字段，这里增加<code>proof</code>字段的具体作用在于验证凭证时，需要验证当前持有者身份是否合法。</p>
 <p>VP的结构图如下：
-<img src="http://s0fss18fc.bkt.clouddn.com/did/vp%E5%AE%9A%E4%B9%89.png?e=1693816043&amp;token=ILZg7lYUjoTfWuZ_WkCq5sUkEjy2kj7ysfsC4n5r:glJBICsjBHg4x2PJNJhjqxqXPbg=" alt="VP"></p>
+<img src="img-vpmodel.png" alt="VP"></p>
 <ul>
 <li>表述元数据：同VC中Metadata信息类似，主要用于描述表述本身的相关信息；</li>
 <li>VC组合：此处可以是一个或多个VC结构；</li>
