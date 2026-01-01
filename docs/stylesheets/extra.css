@@ -59,3 +59,32 @@
     color: var(--md-accent-fg-color);
     text-decoration-thickness: 2px;
 }
+
+/* 图片默认居中 */
+.md-typeset img {
+    display: block;
+    margin: 0 auto;
+}
+
+/* 方案 A 的优化：让图片紧跟的斜体居中并变灰 */
+.md-typeset img + em {
+    display: block;
+    text-align: center;
+    font-size: 0.9em;
+    color: #666; /* 深灰色，不抢黑色正文的视觉 */
+    margin-top: -10px; /* 拉近与图片的距离 */
+    margin-bottom: 20px;
+    font-style: normal; /*如果不想要斜体，可以取消*/
+}
+
+/* 方案 B 的优化：figure 居中 */
+.md-typeset figure {
+    display: table;
+    margin: 0 auto;
+    text-align: center;
+}
+.md-typeset figcaption {
+    margin-top: 8px;
+    font-size: 0.9em;
+    color: #666;
+}
