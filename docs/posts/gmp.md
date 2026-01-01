@@ -1,7 +1,7 @@
 ---
-title:  # 这里写网页显示的标题（支持中文）
-description:  # 这里写简短摘要（用于 SEO 和分享卡片）
-date: 2026-01-01 # 自动插入今天的日期
+title: go gmp模型 # 这里写网页显示的标题（支持中文）
+description:  关于go gmp模型的知识梳理 # 这里写简短摘要（用于 SEO 和分享卡片）
+date: 2026-01-01
 tags:
   - Go
   - Runtime

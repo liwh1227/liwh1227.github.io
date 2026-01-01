@@ -29,7 +29,7 @@
               "state": {
                 "file": "docs/posts/gmp.md",
                 "mode": "source",
-                "source": false
+                "source": true
               },
               "icon": "lucide-file",
               "title": "gmp"
@@ -218,7 +218,7 @@
       "bases:创建新数据库": false
     }
   },
-  "active": "c75409ce1c149815",
+  "active": "4b9e71c4057ff725",
   "lastOpenFiles": [
     "docs/assets/gmp/gm-model.png",
     "docs/assets/gmp",
