@@ -25,14 +25,12 @@
             "id": "4b9e71c4057ff725",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "image",
               "state": {
-                "file": "docs/posts/go/gmp.md",
-                "mode": "source",
-                "source": true
+                "file": "docs/assets/gm-model.png"
               },
-              "icon": "lucide-file",
-              "title": "gmp"
+              "icon": "lucide-image",
+              "title": "gm-model"
             }
           }
         ],
@@ -129,7 +127,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "docs/posts/go/gmp.md",
+                "file": "docs/assets/gm-model.png",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -139,7 +137,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "gmp 的反向链接列表"
+              "title": "gm-model 的反向链接列表"
             }
           },
           {
@@ -148,12 +146,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "docs/posts/go/gmp.md",
+                "file": "docs/assets/gm-model.png",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "gmp 的出链列表"
+              "title": "gm-model 的出链列表"
             }
           },
           {
@@ -191,13 +189,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "docs/posts/go/gmp.md",
+                "file": "docs/assets/gm-model.png",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "gmp 的大纲"
+              "title": "gm-model 的大纲"
             }
           }
         ]
@@ -218,12 +216,14 @@
       "bases:创建新数据库": false
     }
   },
-  "active": "419cff85849901ec",
+  "active": "4b9e71c4057ff725",
   "lastOpenFiles": [
-    "docs/posts/go",
-    "docs/assets/gmp/gm-model.png",
-    "docs/assets/gmp",
     "docs/posts/go/gmp.md",
+    "docs/assets/gm-model.png",
+    "docs/assets/gmp/gm-model.png",
+    "2026-01-01.md",
+    "docs/posts/go",
+    "docs/assets/gmp",
     "_templates/Blog Post Template.md",
     "docs/index.md",
     "_templates",
