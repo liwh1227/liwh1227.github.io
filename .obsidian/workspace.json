@@ -27,7 +27,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/posts/gmp.md",
+                "file": "docs/posts/go/gmp.md",
                 "mode": "source",
                 "source": true
               },
@@ -48,7 +48,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/posts/gmp.md",
+                "file": "docs/posts/go/gmp.md",
                 "mode": "preview",
                 "source": false
               },
@@ -129,7 +129,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "docs/posts/gmp.md",
+                "file": "docs/posts/go/gmp.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -148,7 +148,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "docs/posts/gmp.md",
+                "file": "docs/posts/go/gmp.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -191,7 +191,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "docs/posts/gmp.md",
+                "file": "docs/posts/go/gmp.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -218,11 +218,12 @@
       "bases:创建新数据库": false
     }
   },
-  "active": "4b9e71c4057ff725",
+  "active": "419cff85849901ec",
   "lastOpenFiles": [
+    "docs/posts/go",
     "docs/assets/gmp/gm-model.png",
     "docs/assets/gmp",
-    "docs/posts/gmp.md",
+    "docs/posts/go/gmp.md",
     "_templates/Blog Post Template.md",
     "docs/index.md",
     "_templates",
