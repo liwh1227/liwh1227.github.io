@@ -1,0 +1,61 @@
+/* --- 全局黑白极简变量覆盖 --- */
+:root {
+    /* 定义主色调为纯黑 */
+    --md-primary-fg-color: #000000;
+    --md-primary-fg-color--light: #333333;
+    --md-primary-fg-color--dark: #000000;
+    --md-accent-fg-color: #000000;
+
+    /* 移除头部阴影，实现扁平化 */
+    --md-shadow-z1: none;
+    --md-shadow-z2: none;
+}
+
+/* --- 暗黑模式下的变量 --- */
+[data-md-color-scheme="slate"] {
+    --md-primary-fg-color: #000000; /* 保持头部黑色 */
+    --md-accent-fg-color: #ffffff;  /* 强调色变白 */
+
+    /* 让背景更深邃，而不是 Material 默认的深蓝灰 */
+    --md-default-bg-color: #0a0a0a;
+    --md-default-fg-color: #e0e0e0;
+}
+
+/* --- 细节调整 --- */
+
+/* 头部导航栏背景：亮色模式下纯白，文字纯黑 */
+[data-md-color-scheme="default"] .md-header {
+    background-color: #ffffff;
+    color: #000000;
+    border-bottom: 1px solid #e0e0e0; /* 加一条细线区分 */
+}
+
+/* 头部导航栏链接颜色 */
+[data-md-color-scheme="default"] .md-header__button,
+[data-md-color-scheme="default"] .md-tabs__link {
+    color: #000000;
+    opacity: 0.7;
+}
+
+[data-md-color-scheme="default"] .md-tabs__link--active {
+    color: #000000;
+    font-weight: bold;
+    opacity: 1;
+}
+
+/* 去除代码块的圆角，更硬朗 */
+.md-typeset pre > code {
+    border-radius: 0;
+}
+
+/* 链接下划线样式 (黑白风常用) */
+.md-typeset a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+}
+.md-typeset a:hover {
+    color: var(--md-accent-fg-color);
+    text-decoration-thickness: 2px;
+}

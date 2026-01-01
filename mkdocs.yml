@@ -1,0 +1,55 @@
+site_name: LIWH.DEV
+site_url: https://liwh1227.github.io/
+repo_url: https://github.com/liwh1227/liwh1227.github.io
+repo_name: liwh1227
+
+# 1. 只有黑白，不需要复杂的搜索建议
+theme:
+  name: material
+  features:
+    - navigation.tabs        # 顶部导航
+    - navigation.instant     # 类似 SPA 的无刷新跳转
+    - navigation.tracking    # URL 随滚动变化
+    - toc.follow             # 侧边栏跟随
+    - content.code.copy
+
+  # 2. 调色板配置 (配合下方的 CSS 实现纯黑白)
+  palette:
+    # 明亮模式 (Light Mode)
+    - scheme: default
+      primary: white         # 实际上会被 CSS 覆盖
+      accent: black
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # 暗黑模式 (Dark Mode)
+    - scheme: slate
+      primary: black
+      accent: white
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  # 3. 字体配置 (推荐使用系统字体或极简无衬线字体)
+  font:
+    text: Inter
+    code: JetBrains Mono
+
+# 4. 引入自定义 CSS (这是实现黑白风格的关键)
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - attr_list
+
+nav:
+  - Home: index.md
+  - Tech: posts/tech/
+  - Life: posts/life/
+  - About: about.md
