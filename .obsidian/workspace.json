@@ -25,36 +25,18 @@
             "id": "4b9e71c4057ff725",
             "type": "leaf",
             "state": {
-              "type": "image",
-              "state": {
-                "file": "docs/assets/gm-model.png"
-              },
-              "icon": "lucide-image",
-              "title": "gm-model"
-            }
-          }
-        ],
-        "currentTab": 1
-      },
-      {
-        "id": "6d1e1c5409adba90",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "c75409ce1c149815",
-            "type": "leaf",
-            "state": {
               "type": "markdown",
               "state": {
                 "file": "docs/posts/go/gmp.md",
-                "mode": "preview",
+                "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
               "title": "gmp"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -127,7 +109,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "docs/assets/gm-model.png",
+                "file": "docs/posts/go/gmp.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -137,7 +119,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "gm-model 的反向链接列表"
+              "title": "gmp 的反向链接列表"
             }
           },
           {
@@ -146,12 +128,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "docs/assets/gm-model.png",
+                "file": "docs/posts/go/gmp.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "gm-model 的出链列表"
+              "title": "gmp 的出链列表"
             }
           },
           {
@@ -189,13 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "docs/assets/gm-model.png",
+                "file": "docs/posts/go/gmp.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "gm-model 的大纲"
+              "title": "gmp 的大纲"
             }
           }
         ]
@@ -218,8 +200,9 @@
   },
   "active": "4b9e71c4057ff725",
   "lastOpenFiles": [
-    "docs/posts/go/gmp.md",
+    "docs/assets/gmp-model.png",
     "docs/assets/gm-model.png",
+    "docs/posts/go/gmp.md",
     "docs/assets/gmp/gm-model.png",
     "2026-01-01.md",
     "docs/posts/go",
