@@ -13,20 +13,6 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/index.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "index"
-            }
-          },
-          {
-            "id": "4b9e71c4057ff725",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
                 "file": "docs/posts/go/gmp.md",
                 "mode": "source",
                 "source": false
@@ -35,8 +21,7 @@
               "title": "gmp"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -56,7 +41,7 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false
+                "autoReveal": true
               },
               "icon": "lucide-folder-closed",
               "title": "文件列表"
@@ -198,20 +183,26 @@
       "bases:创建新数据库": false
     }
   },
-  "active": "4b9e71c4057ff725",
+  "active": "419cff85849901ec",
   "lastOpenFiles": [
+    "docs/index.md",
+    "未命名 4.base",
+    "未命名.base",
+    "未命名 3.base",
+    "未命名 2.base",
+    "未命名 1.base",
+    "docs/posts/go/gmp.md",
+    "2026-01-01.md",
+    "未命名.md",
+    "docs/assets/gmp-schedule.png",
+    "docs/assets/gmp-schedule-1.png",
     "docs/assets/gmp-model.png",
     "docs/assets/gm-model.png",
-    "docs/posts/go/gmp.md",
     "docs/assets/gmp/gm-model.png",
-    "2026-01-01.md",
     "docs/posts/go",
     "docs/assets/gmp",
     "_templates/Blog Post Template.md",
-    "docs/index.md",
     "_templates",
-    "未命名.base",
-    "未命名 1.base",
     "docs/stylesheets/extra.css",
     "docs/stylesheets"
   ]
