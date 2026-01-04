@@ -16,5 +16,5 @@ jobs:
         with:
           python-version: 3.x
       # 修改这一行，多装一个插件
-      - run: pip install mkdocs-material mkdocs-awesome-pages-plugin
+      - run: pip install mkdocs-material mkdocs-awesome-pages-plugin mkdocs-glightbox
       - run: mkdocs gh-deploy --force
