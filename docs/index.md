@@ -25,6 +25,11 @@
 > **Go Runtime** · *Scheduler*
 > 深入 Go 语言调度器的核心机制，探索 G、M、P 三者如何在微观层面协作，以及 Work Stealing 的实现逻辑。
 
+> ### [goroutine](posts/go/goroutine.md)
+>
+> **Go Runtime** · *goroutine*
+> 深入 GMP 模型中的G结构，从源码角度进行分析。
+
 <div align="center" markdown="1">
 
 [Find me on GitHub](https://github.com/liwh1227)
