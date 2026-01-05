@@ -117,3 +117,5 @@ M 在持有 P 的情况下，通过 `findrunnable` 函数执行调度循环。�
 ## 4. 总结
 
 GMP 模型是 Go 高并发能力的基石。它通过 **Runnext** 极致利用局部性，通过 **Work Stealing** 保证负载均衡，通过 **Preemption** 确保调度公平，并利用 **Syscall Handoff** 和 **Netpoller** 实现了对操作系统线程的高效复用。
+## 5. 进一步了解
+[Goroutine 深度解析](goroutine.md)

@@ -66,25 +66,71 @@
     margin: 0 auto;
 }
 
-/* 方案 A 的优化：让图片紧跟的斜体居中并变灰 */
-.md-typeset img + em {
-    display: block;
-    text-align: center;
-    font-size: 0.9em;
-    color: #666; /* 深灰色，不抢黑色正文的视觉 */
-    margin-top: -10px; /* 拉近与图片的距离 */
-    margin-bottom: 20px;
-    font-style: normal; /*如果不想要斜体，可以取消*/
+/* docs/stylesheets/extra.css */
+
+/* --- 核心修复：针对 GLightbox 包裹的图片容器 --- */
+/* 解释：既然 img 不支持 ::after，我们就利用 GLightbox 生成的 <a> 标签作为容器 */
+.md-typeset a.glightbox {
+    display: block;         /* 让链接变成块级元素，以便支持 margin */
+    position: relative;     /* 为水印的绝对定位做参照 */
+    width: fit-content;     /* 关键：让容器宽度紧贴图片，否则水印会跑到屏幕最右边 */
+    margin: 0 auto;         /* 保持图片整体居中 */
 }
 
-/* 方案 B 的优化：figure 居中 */
+/* 在图片右下角添加水印 */
+.md-typeset a.glightbox::after {
+    content: "© liwh1227";  /* 水印文字 */
+    position: absolute;
+    bottom: 6px;            /* 距离底部微调 */
+    right: 6px;             /* 距离右侧微调 */
+    font-size: 11px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(0, 0, 0, 0.5); /* 半透明黑底，保证白字可见 */
+    padding: 2px 6px;
+    border-radius: 4px;
+    pointer-events: none;   /* 让水印不阻挡鼠标点击图片 */
+    z-index: 10;
+}
+
+/* --- 兼容逻辑：保留 Figure 支持（以防你手写 HTML）--- */
 .md-typeset figure {
-    display: table;
+    display: table; /* table 能让 figure 自动贴合图片宽度 */
     margin: 0 auto;
     text-align: center;
+    position: relative;
+}
+.md-typeset figure::after {
+    content: "© LIWH.DEV";
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2px 6px;
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 10;
 }
 .md-typeset figcaption {
+    display: block;
+    text-align: center;
     margin-top: 8px;
-    font-size: 0.9em;
+    font-style: italic;
     color: #666;
+    font-size: 0.9em;
+}
+
+/* --- 图注样式修复 --- */
+/* 2. 针对 Markdown 原生写法 (兼容 GLightbox 结构) */
+.md-typeset img + em,
+.md-typeset a.glightbox + em {
+    display: block;
+    text-align: center;
+    margin-top: 6px;      /* 拉近与图片的距离 */
+    margin-bottom: 20px;
+    font-style: normal;    /* 取消斜体，更像正式图注 */
+    color: #666;
+    font-size: 0.9em;
 }
