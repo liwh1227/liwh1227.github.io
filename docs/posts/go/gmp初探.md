@@ -9,7 +9,7 @@ tags:
 
 # Go Runtime Scheduler: 深度解析 GMP 模型
 
-> gemini3 辅助本文档的编写和校准工作
+> gemini3 辅助本文档的编写和校准工作，图片使用draw.io绘制
 
 ## 1. 背景与痛点
 
