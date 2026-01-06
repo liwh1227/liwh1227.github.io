@@ -20,7 +20,7 @@
 
 ## Featured Thoughts
 
-> ### [GMP](posts/go/gmp%E5%88%9D%E6%8E%A2.md)
+> ### [GMP](posts/go/gmp.md)
 >
 > **Go Runtime** · *Scheduler*
 > 深入 Go 语言调度器的核心机制，探索 G、M、P 三者如何在微观层面协作，以及 Work Stealing 的实现逻辑。

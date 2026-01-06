@@ -5,7 +5,6 @@
 ## 1. 核心结构
 
 我们从 Goroutine 的源码及其核心状态开始分析，结合其整个生命周期的变换及 runtime 函数调用进行剖析。
-
 ### 源码
 
 下面的代码片段基于 `go1.24.5` 版本，展示了 `g` 结构体中与调度息息相关的关键字段。完整结构可见 [runtime2.go](https://github.com/golang/go/blob/master/src/runtime/runtime2.go#L473)。
