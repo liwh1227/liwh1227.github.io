@@ -2,11 +2,11 @@
 
 ## 1. 核心结构
 
-P 代表 **Processor**（逻辑处理器）。它的数量决定了 Go 程序的**最大并行度**（由 `GOMAXPROCS` 决定）。P 维护了 M 执行 G 所需的上下文环境，如本地任务队列、内存分配缓存等。
+P 代表 **Processor**（逻辑处理器）。它的数量决定了 Go 程序的**最大并行度**（由 `GOMAXPROCS` 决定）。P 是 GMP 模型中的核心资源管理者，它维护了 M 执行 G 所需的上下文环境，如本地任务队列、内存分配缓存等。
 
 ### 源码核心字段
 
-下面的代码片段基于 Go 1.24+ 版本，筛选了 `p` 结构中最核心的字段（完整结构见 [runtime2.go](https://github.com/golang/go/blob/master/src/runtime/runtime2.go)）：
+下面的代码片段基于 Go 1.24+ 版本，筛选了 `p` 结构中最核心字段（完整结构见 [runtime2.go](https://github.com/golang/go/blob/master/src/runtime/runtime2.go)）：
 
 ```go
 type p struct {
@@ -78,6 +78,7 @@ P 的生命周期与程序运行过程紧密相关，且比较稳定，核心状
 
 ![](../../assets/processor-1.png)
 *图1: p的生命周期及流转*
+
 1. **创建 (Bootstrap)**：
     - 程序启动时，Runtime 会根据 `GOMAXPROCS`（默认为 CPU 核数）创建所有的 P，并存储在全局变量 `allp` 切片中。
 2. **重置 (Resize)**：
@@ -100,30 +101,59 @@ P 的状态决定了它是否可用，以及它当前归谁管。
 | **`_Pgcstop`**  | **GC 停止** | 被 STW (Stop The World) 暂停。当前 P 里的 G 停止运行，等待 GC 完成。                    |
 | **`_Pdead`**    | **已死亡**   | `GOMAXPROCS` 减少后，多余的 P 进入此状态，不再被使用。                                   |
 
-### 关键机制图解
+### 关键机制
 
-#### A. 工作窃取 (Work Stealing)
+#### 1. 工作窃取 (Work Stealing)
 
 我们在前文中多次提到了工作窃取机制，由于该机制是不同p之间的交互逻辑，所以这里详细介绍下p的表现及窃取的过程，图2展示了p是如何进行work steal的。
-![](../../assets/processor-worksteal-1.png)
+![](../../assets/processor-worksteal-1.png)*图2: p的work steal机制*
 
-*图2: p的work steal机制* 
 1. **查**：看 `runnext` 和 `runq`（空）。
 2. **找**：看全局队列（空）。
-3. **偷**：随机选一个 victim P，从它的 `runq` 尾部偷走 **一半** 的 G。
-- **意义**：实现了自动的负载均衡，防止出现“一核有难，八核围观”的现象。
+3. **偷**：随机选一个 victim P，从它的 `runq` 头部偷走 **一半** 的 G。
 
-除此之外，我们还要明白，runtime到底是如何决定窃取哪一个p？p在保存在allp的数组中，为了随机性，其采用了$$victim = (start + i \times step) \% nprocs$$
-算法来选取目标p保证了随机性，并使用乐观CAS机制来避免全局锁带来的效率问题，多个p竞争抢占的示意图如图3所示。
+**窃取目标的随机性算法：** Runtime 采用了 `victim = (start + i * step) % nprocs` 算法来选取目标 P。
+
+- **start**: 随机起点。
+- **step**: 与 P 总数互质的步长。
+
+保证了遍历的伪随机性，同时确保能不重不漏地扫描所有 P，避免了全局锁竞争。多 P 竞争示意图如图3所示。
 ![](../../assets/processor-2.png)
 *图3: work steal竞争和详细机制* 
-#### B. 切换机制 (Handoff P)
+
+#### 2. 切换机制 (Handoff P)
 
 这是处理阻塞调用的核心。
 
 - **Fast Path**：M 进行短时间的 syscall，P 保持 `_Psyscall` 状态，M 回来直接用。
 - **Slow Path**：sysmon 发现 M 阻塞太久，将 P 的状态改为 `_Pidle` 并剥离（Retake）。新的 M 可以获取这个 P，继续执行 P 队列里剩余的 G。**这保证了单个 M 的阻塞不会导致整个 P 队列的停滞。**
 ⚠️：我翻看了[_Psyscall in go 1.26](https://github.com/golang/go/blob/go1.26rc1/src/runtime/runtime2.go#L146)的逻辑，`_Psyscall`的定义已经废弃，详细见源码分析。
+
+#### 3. 局部性
+
+在之前的GMP模型中我们详细介绍过p的引入是在很大程度上解决全局资源竞争的问题。深入到P的源码定义，会看到很多关于局部性优化的元素。
+
+```go
+type p struct { 
+	mcache *mcache       // 小对象直接本地分配内存 (无锁) 
+	runq [256]guintptr   // 本地 G 队列 (无锁/CAS) 
+	gFree struct { ... } // 本地 G 复用池 (无锁) 
+	sudogcache []*sudog  // Channel 阻塞等待结构缓存 
+	deferpool []*_defer  // Defer 对象池 
+	timers *timers       // 本地定时器堆 (Go 1.14+) 
+}
+```
+
+上述结构都是P局部性优化的关键，下面的表格简要描述了其维护的本地结构和对应全局结构的功能：
+
+| **资源类型**      | **P 本地 - 无锁**              | **全局 - 有锁**          | **作用**  |
+| ------------- | -------------------------- | -------------------- | ------- |
+| **执行任务**      | `p.runq` (runnext + array) | `sched.runq`         | 调度任务    |
+| **Goroutine** | `p.gFree`                  | `sched.gFree`        | 复用 G 对象 |
+| **内存对象**      | `p.mcache`                 | `mcentral` / `mheap` | 小对象分配   |
+| **Channel**   | `p.sudogcache`             | `sched.sudogcache`   | 阻塞等待结构  |
+| **Defer**     | `p.deferpool`              | `sched.deferpool`    | 延迟调用结构  |
+| **Timer**     | `p.timers` (1.14+)         | (无全局堆)               | 定时器管理   |
 
 ---
 
