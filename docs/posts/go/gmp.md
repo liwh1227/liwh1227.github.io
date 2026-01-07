@@ -7,7 +7,7 @@ tags:
   - Runtime
 ---
 
-# Go Runtime Scheduler: 深度解析 GMP 模型
+#  GMP 模型
 
 > gemini3 辅助本文档的编写和校准工作，图片使用draw.io绘制
 
