@@ -134,3 +134,45 @@
     color: #666;
     font-size: 0.9em;
 }
+
+/* 强制数学公式颜色适配黑白主题 */
+.md-typeset .arithmatex,
+.mjx-container {
+    color: var(--md-default-fg-color) !important;
+    fill: var(--md-default-fg-color) !important;
+}
+
+/* 脚注部分样式优化 */
+.md-typeset .footnote {
+    font-size: 0.85em; /* 字体稍微改小 */
+    color: #666;       /* 颜色改灰，降低视觉干扰 */
+    border-top: 1px solid #eee; /* 顶部分割线 */
+    margin-top: 2em;
+}
+
+/* 脚注里的链接去除下划线，保持整洁 */
+.md-typeset .footnote a {
+    text-decoration: none;
+}
+
+/* 鼠标悬停时的引用气泡背景 (适配你的黑白风) */
+.md-tooltip {
+    background-color: #000;
+    color: #fff;
+    font-size: 0.85em;
+    border-radius: 0; /* 直角，更硬朗 */
+}
+
+/* --- 表格标题样式适配 --- */
+/* 逻辑：选中紧跟在表格容器后的段落里的斜体文字 */
+.md-typeset .md-typeset__table + p > em,
+.md-typeset table + p > em {
+    display: block !important;
+    text-align: center !important;
+    margin-top: 0.5em !important;
+    margin-bottom: 2em !important;
+    font-style: normal !important;  /* 强制取消斜体 */
+    color: #666 !important;
+    font-size: 0.9em !important;
+    font-weight: bold;
+}

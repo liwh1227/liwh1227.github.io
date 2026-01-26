@@ -20,15 +20,19 @@
 
 ## Featured Thoughts
 
-> ### [GMP](posts/go/gmp.md)
+> ### [07. GC--三色标记法](posts/go/07.%20GC--%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0%E6%B3%95.md)
 >
-> **Go Runtime** · *Scheduler*
-> 深入 Go 语言调度器的核心机制，探索 G、M、P 三者如何在微观层面协作，以及 Work Stealing 的实现逻辑。
+> **Go Runtime** · *GC*
+> Go Runtime · GC Algorithm 图解 Go 垃圾回收的核心——三色标记算法。剖析对象从“白色”到“黑色”的流转过程，以及并发标记阶段如何通过 STW 和后台标记实现低延迟回收。
 
-> ### [goroutine](posts/go/goroutine.md)
+> ### [08. GC--混合写屏障](posts/go/08.%20GC--%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C.md)
 >
-> **Go Runtime** · *goroutine*
-> 深入 GMP 模型中的G结构，从源码角度进行分析。
+> Go Runtime · Memory Barrier 深入解析 Go 1.8 引入的混合写屏障（Hybrid Write Barrier）机制。看它如何结合 Dijkstra 插入屏障与 Yuasa 删除屏障的优势，在保证数据一致性的同时彻底消除栈重扫描。
+
+> ### [09. GC--调度与目标控制.md](posts/go/09.%20GC--%E8%B0%83%E5%BA%A6%E4%B8%8E%E7%9B%AE%E6%A0%87%E6%8E%A7%E5%88%B6.md)
+>
+> Go Runtime · GC Pacer 揭秘 Go GC 的触发时机与 Pacer（步调）算法。深度解读 GOGC 参数与 TargetHeap 公式背后的数学模型，以及运行时如何平衡 CPU 利用率与内存增长。
+
 
 <div align="center" markdown="1">
 
