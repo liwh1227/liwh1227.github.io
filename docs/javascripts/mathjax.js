@@ -1,7 +1,7 @@
 window.MathJax = {
   tex: {
     inlineMath: [["\\(", "\\)"]],
-    displayMath: [["\\[", "\\]"]],
+    displayMath: [["$$", "$$"], ["\\[", "\\]"]],
     processEscapes: true,
     processEnvironments: true
   },
@@ -9,9 +9,9 @@ window.MathJax = {
     ignoreHtmlClass: ".*|",
     processHtmlClass: "arithmatex"
   }
+  // 这里不需要配置 fontURL 了，因为 SVG 不需要外部字体
 };
 
 document$.subscribe(() => {
-  // 重新渲染公式（适配 Instant Loading）
   MathJax.typesetPromise()
 })
