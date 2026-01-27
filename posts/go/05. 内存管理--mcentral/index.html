@@ -1,0 +1,1296 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://liwh1227.github.io/posts/go/05.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mcentral/">
+      
+      
+        <link rel="prev" href="../04.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mheap/">
+      
+      
+        <link rel="next" href="../06.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mcache/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>05. 内存管理--mcentral - LIWH.DEV</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#05-mcentral" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="LIWH.DEV" class="md-header__button md-logo" aria-label="LIWH.DEV" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LIWH.DEV
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              05. 内存管理--mcentral
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="white" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/liwh1227/liwh1227.github.io" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    liwh1227
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../00.%20GMP%20%E6%A8%A1%E5%9E%8B%E6%80%BB%E8%A7%88/" class="md-tabs__link">
+          
+  
+  
+  Posts
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="LIWH.DEV" class="md-nav__button md-logo" aria-label="LIWH.DEV" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    LIWH.DEV
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/liwh1227/liwh1227.github.io" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    liwh1227
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Posts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Posts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../00.%20GMP%20%E6%A8%A1%E5%9E%8B%E6%80%BB%E8%A7%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00. GMP 模型总览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01.%20Goroutine%28G%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01. Goroutine(G)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02.%20Machine%28M%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02. Machine(M)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03.%20Processor%28P%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03. Processor(P)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mheap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04. 内存管理--mheap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05. 内存管理--mcentral
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05. 内存管理--mcentral
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 核心定位与设计
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 数据结构解析
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. 数据结构解析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-mcentral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 mcentral 内部结构
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-full-partial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 核心机制：Full 与 Partial 的流转
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. 核心机制：Full 与 Partial 的流转">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 进货逻辑
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 归还逻辑
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-refill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 refill流程图
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-mcentral-mheap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 关键交互：mcentral 与 mheap 的扩容协议
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 关键交互：mcentral 与 mheap 的扩容协议">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        交互流程
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 总结
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mcache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06. 内存管理--mcache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07.%20GC--%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0%E6%B3%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07. GC--三色标记法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08.%20GC--%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08. GC--混合写屏障
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09.%20GC--%E8%B0%83%E5%BA%A6%E4%B8%8E%E7%9B%AE%E6%A0%87%E6%8E%A7%E5%88%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09. GC--调度与目标控制机制
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 核心定位与设计
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 数据结构解析
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. 数据结构解析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-mcentral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 mcentral 内部结构
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-full-partial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 核心机制：Full 与 Partial 的流转
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. 核心机制：Full 与 Partial 的流转">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 进货逻辑
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 归还逻辑
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-refill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 refill流程图
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-mcentral-mheap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 关键交互：mcentral 与 mheap 的扩容协议
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 关键交互：mcentral 与 mheap 的扩容协议">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        交互流程
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 总结
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="05-mcentral">05. 内存管理--mcentral</h1>
+<h2 id="1">1. 核心定位与设计</h2>
+<p>在 Go 运行时的三层分配架构中，小对象分配通常走这条链路：</p>
+<p><strong>mcache（per-P，本地无锁快路径） → mcentral（按 size class/scan 属性分组的共享中枢） → mheap（全局页级分配与 span 创建）</strong></p>
+<p><code>mcentral</code>的核心价值不在于“分配对象”，而在于<strong>提供可复用的 mspan</strong> 并把全局竞争降到可控范围：</p>
+<ul>
+<li>如果所有 P 都直接向 <code>mheap</code>申请 span，会导致全局锁竞争成为瓶颈。</li>
+<li>如果把过多 span 长期滞留在 <code>mcache</code>，会引入更高的内存占用与碎片风险。</li>
+</ul>
+<h2 id="2">2. 数据结构解析</h2>
+<p><code>mcentral</code> 并非独立存在于堆外，而是直接内嵌在 <code>mheap</code> 结构体中。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">mheap</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="c1">// ... 其他字段</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="c1">// 5. 堆内存的“批发市场”(mcentral 数组)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nx">central</span><span class="w"> </span><span class="p">[</span><span class="nx">numSpanClasses</span><span class="p">]</span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">        </span><span class="nx">mcentral</span><span class="w"> </span><span class="nx">mcentral</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">        </span><span class="nx">pad</span><span class="w">      </span><span class="p">[</span><span class="nx">cpu</span><span class="p">.</span><span class="nx">CacheLinePadSize</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Sizeof</span><span class="p">(</span><span class="nx">mcentral</span><span class="p">{})</span><span class="o">%</span><span class="nx">cpu</span><span class="p">.</span><span class="nx">CacheLinePadSize</span><span class="p">]</span><span class="kt">byte</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><strong>数组结构</strong>：<code>central</code> 是一个长度为 <code>numSpanClasses</code>（通常为 136， <code>68 * 2</code> 包含 scan 和 noscan）的数组 。这意味着每一种规格（如 8B, 16B...）都有一个独立的 <code>mcentral</code> 实例负责管理。</li>
+<li><strong>Padding 填充</strong>：代码中的 <code>pad</code> 字段至关重要。不同 P 的 refill 会命中不同 class 的 <code>mcentral</code>，让每个 <code>mcentral</code>尽量独占 cache line 能显著降低跨核 cache 抖动。</li>
+</ul>
+<h3 id="21-mcentral">2.1 mcentral 内部结构</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">mcentral</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="c1">// 1. 占位符：防止结构体被分配在堆上（必须嵌入在 mheap 中）</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nx">_</span><span class="w"> </span><span class="nx">sys</span><span class="p">.</span><span class="nx">NotInHeap</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="c1">// 2. 规格 ID：当前 mcentral 管理的 span 规格（如 8B, 16B...）</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="nx">spanclass</span><span class="w"> </span><span class="nx">spanClass</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="c1">// 3. 有空位的 Span 集合（双缓冲）</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nx">partial</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nx">spanSet</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="c1">// 4. 无空位的 Span 集合（双缓冲）</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="nx">full</span><span class="w">    </span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nx">spanSet</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="p">}</span>
+</code></pre></div>
+<p><code>mcentral</code> 的核心职责是管理两类 Span 链表：</p>
+<ol>
+<li><strong>spanclass</strong>：当前 mcentral 管理的 span 规格，mcentral是按class进行加锁申请和分配内存的。</li>
+<li><strong>partial (有空位)</strong>：包含“至少有一个空闲对象”的 span 集合。这是 <code>mcache</code> 进货时的首选目标。</li>
+<li><strong>full (已满/被占用)</strong>：包含“没有空闲对象”的 span 集合。
+<code>mcentral</code>的结构如图1所示：</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/mcentral.png" data-desc-position="bottom"><img alt="" src="../../../assets/mcentral.png"></a>
+<em>图1: mcentral示意图</em></p>
+<p>结合图1和源码的逻辑，<code>mcentral</code>针对<code>scan</code>和<code>noscan</code>的对象类型进行了分类，</p>
+<ul>
+<li>
+<p><strong>scan（contains pointers）</strong>：该 class 的对象可能包含指针，GC 标记时需要扫描对象内容以发现引用。</p>
+</li>
+<li>
+<p><strong>noscan（no pointers）</strong>：该 class 的对象不包含指针，GC 标记时无需扫描对象内容，从而降低标记成本。</p>
+</li>
+</ul>
+<p>这种设计可以提升垃圾回收的效率，减少垃圾回收的成本。无论何种类型的内存区域，都是通过partial和full列表进行管理，这种设计也可以提升垃圾回收的效率，当mcache进行内存申请时，优先从partial列表获取，然后才回去获取full列表中的span。<code>partial/full [2]spanSet</code>是一个大小为2的数组，并不是1，在源码中，有这么一段逻辑：
+</p><div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// partialUnswept returns the spanSet which holds partially-filled// unswept spans for this sweepgen.  </span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="o">*</span><span class="nx">mcentral</span><span class="p">)</span><span class="w"> </span><span class="nx">partialUnswept</span><span class="p">(</span><span class="nx">sweepgen</span><span class="w"> </span><span class="kt">uint32</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="nx">spanSet</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">partial</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="nx">sweepgen</span><span class="o">/</span><span class="mi">2</span><span class="o">%</span><span class="mi">2</span><span class="p">]</span><span class="w">  </span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1">// partialSwept returns the spanSet which holds partially-filled// swept spans for this sweepgen.  </span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="o">*</span><span class="nx">mcentral</span><span class="p">)</span><span class="w"> </span><span class="nx">partialSwept</span><span class="p">(</span><span class="nx">sweepgen</span><span class="w"> </span><span class="kt">uint32</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="nx">spanSet</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">partial</span><span class="p">[</span><span class="nx">sweepgen</span><span class="o">/</span><span class="mi">2</span><span class="o">%</span><span class="mi">2</span><span class="p">]</span><span class="w">  </span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="p">}</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="c1">// fullUnswept returns the spanSet which holds unswept spans without any// free slots for this sweepgen.  </span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="o">*</span><span class="nx">mcentral</span><span class="p">)</span><span class="w"> </span><span class="nx">fullUnswept</span><span class="p">(</span><span class="nx">sweepgen</span><span class="w"> </span><span class="kt">uint32</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="nx">spanSet</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">full</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="nx">sweepgen</span><span class="o">/</span><span class="mi">2</span><span class="o">%</span><span class="mi">2</span><span class="p">]</span><span class="w">  </span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="c1">// fullSwept returns the spanSet which holds swept spans without any// free slots for this sweepgen.  </span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">c</span><span class="w"> </span><span class="o">*</span><span class="nx">mcentral</span><span class="p">)</span><span class="w"> </span><span class="nx">fullSwept</span><span class="p">(</span><span class="nx">sweepgen</span><span class="w"> </span><span class="kt">uint32</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="nx">spanSet</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">c</span><span class="p">.</span><span class="nx">full</span><span class="p">[</span><span class="nx">sweepgen</span><span class="o">/</span><span class="mi">2</span><span class="o">%</span><span class="mi">2</span><span class="p">]</span><span class="w">  </span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="p">}</span>
+</code></pre></div><p></p>
+<p><code>sweepgen</code> 用于标识运行时当前的 <strong>sweep generation（清扫代际）</strong>。<code>mcentral</code> 将 <code>partial/full</code> 维护为两个集合（<code>[2]spanSet</code>），并通过 <code>sweepgen</code> 推导出“当前视角下的 swept/unswept 索引”（如 <code>sweepgen/2%2</code> 与 <code>1-sweepgen/2%2</code>）。这样在 GC 代际切换时，无需遍历所有 span 重分类，只需 <strong>O(1) 地切换索引视图</strong>，即可把“已清扫/未清扫”的逻辑分区完成翻转。</p>
+<hr>
+<h2 id="3-full-partial">3. 核心机制：Full 与 Partial 的流转</h2>
+<p><code>mcentral</code> 的高效运作依赖于 span 在 <code>partial</code> 和 <code>full</code> 两个集合间的精准流转。这是一个动态平衡的过程。</p>
+<h3 id="31">3.1 进货逻辑</h3>
+<p>当某个 P 的 <code>mcache</code> 在某个 <code>spanClass</code> 上耗尽时，会触发 refill。<code>mcentral.cacheSpan</code> 的目标是返回一个“可分配对象的 span”，流程可概括为：</p>
+<ol>
+<li>
+<p><strong>查找 Partial (Swept)</strong>：优先查找 <code>partial</code> 列表中那些<strong>已经完成 GC 清扫</strong>且有空位的 span。这是最快路径，拿到即用。</p>
+</li>
+<li>
+<p><strong>查找 Partial (Unswept)</strong>：如果没找到，尝试查找 <code>partial</code> 列表中<strong>尚未清扫</strong>的 span。找到后，原地触发清扫，如果清扫后有空位，则返回，否则归入适当集合。</p>
+</li>
+<li>
+<p><strong>查找 Full (Unswept)</strong>：如果 <code>partial</code> 空了，去 <code>full</code> 列表中找那些“逻辑上满但包含死对象”的 span。对其进行清扫，如果回收了空间，将其移入 <code>partial</code> 并返回。</p>
+</li>
+<li>
+<p><strong>兜底 (Grow)</strong>：如果同规格确实缺 span，则向 <code>mheap</code>申请页并创建新 span。</p>
+</li>
+</ol>
+<h3 id="32">3.2 归还逻辑</h3>
+<p>当 span 在 <code>mcache</code> 中被再次填满，或者因为 GC 导致 span 归还时：</p>
+<ul>
+<li>
+<p>span 会被移回 <code>mcentral</code>。</p>
+</li>
+<li>
+<p>如果 span 还有空位，放入 <code>partial</code> 集合。</p>
+</li>
+<li>
+<p>如果 span 满了，放入 <code>full</code> 集合。</p>
+</li>
+</ul>
+<h3 id="33-refill">3.3 refill流程图</h3>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/mcentral-refill.png" data-desc-position="bottom"><img alt="" src="../../../assets/mcentral-refill.png"></a>
+ <em>图2: refill 流程示意</em></p>
+<hr>
+<h2 id="4-mcentral-mheap">4. 关键交互：mcentral 与 mheap 的扩容协议</h2>
+<p><code>mcentral</code> 自身不持有物理内存的所有权，它只是管理者。真正的内存分配发生在 <code>mheap</code>。</p>
+<h3 id="_1">交互流程</h3>
+<ol>
+<li><strong>计算需求</strong>：当 <code>mcentral</code> 决定扩容时，它根据自身管理的 Size Class，查表得知需要的页数 <code>npages</code><em>（例如：Class 10 需要 2 页，即 16KB）</em>。</li>
+<li><strong>向 mheap 申请页</strong>：进入 <code>mheap</code> 的页级分配（内部可能涉及全局锁或更细粒度同步），在 page allocator 中找到连续空闲页并标记占用。</li>
+<li><strong>初始化 mspan</strong>：设置 span 的边界、对象布局相关元数据，并初始化分配位图（allocBits）与 GC 标记位图等。</li>
+<li><strong>返回给 cacheSpan</strong>：作为“进货结果”交给触发 refill 的 <code>mcache</code>，从而恢复小对象分配快路径。</li>
+</ol>
+<h2 id="5">5. 总结</h2>
+<p><code>mcentral</code> 是 Go 内存分配器中“化整为零”的关键环节。</p>
+<ul>
+<li>它通过 <strong>Span Class</strong> 将内存管理标准化。</li>
+<li>它通过 <strong>Partial/Full 双集合</strong> 机制，实现了内存的惰性清理与高效复用。</li>
+<li>它通过 <strong>Per-Class 的细粒度锁</strong>，在避免全局锁竞争的同时，保证了多线程分配的安全性 。</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.instant", "navigation.tracking", "toc.follow", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../javascripts/text-mml-svg.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>
