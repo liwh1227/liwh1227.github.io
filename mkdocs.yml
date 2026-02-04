@@ -60,3 +60,6 @@ plugins:
   - search
   - awesome-pages
   - glightbox
+
+hooks:
+  - hooks/reading_time.py
