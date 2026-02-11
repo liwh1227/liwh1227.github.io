@@ -1,0 +1,1850 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://liwh1227.github.io/posts/go/10.%20%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B--IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/">
+      
+      
+        <link rel="prev" href="../09.%20GC--%E8%B0%83%E5%BA%A6%E4%B8%8E%E7%9B%AE%E6%A0%87%E6%8E%A7%E5%88%B6/">
+      
+      
+        <link rel="next" href="../11.%20%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B--%E5%90%8CGMP%E6%A8%A1%E5%9E%8B%E5%8D%8F%E4%BD%9C/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>10. 网络模型 IO多路复用 - LIWH.DEV</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#10-io" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="LIWH.DEV" class="md-header__button md-logo" aria-label="LIWH.DEV" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LIWH.DEV
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              10. 网络模型  IO多路复用
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="white" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/liwh1227/liwh1227.github.io" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    liwh1227
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../00.%20GMP%20%E6%A8%A1%E5%9E%8B%E6%80%BB%E8%A7%88/" class="md-tabs__link">
+          
+  
+  
+  Posts
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="LIWH.DEV" class="md-nav__button md-logo" aria-label="LIWH.DEV" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    LIWH.DEV
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/liwh1227/liwh1227.github.io" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    liwh1227
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Posts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Posts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../00.%20GMP%20%E6%A8%A1%E5%9E%8B%E6%80%BB%E8%A7%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00. GMP 模型总览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01.%20Goroutine%28G%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01. Goroutine(G)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02.%20Machine%28M%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02. Machine(M)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03.%20Processor%28P%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03. Processor(P)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mheap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04. 内存管理  mheap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mcentral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05. 内存管理  mcentral
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mcache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06. 内存管理  mcache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07.%20GC--%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0%E6%B3%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07. GC  三色标记法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08.%20GC--%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08. GC  混合写屏障
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09.%20GC--%E8%B0%83%E5%BA%A6%E4%B8%8E%E7%9B%AE%E6%A0%87%E6%8E%A7%E5%88%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09. GC  调度与目标控制
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. 网络模型  IO多路复用
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. 网络模型  IO多路复用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 前言
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. 前言">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 从一段代码开始
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 异步非阻塞
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-bio-vs-multiplexing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. BIO vs Multiplexing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. BIO vs Multiplexing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-io-bio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 传统阻塞 I/O (BIO)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 I/O 多路复用
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-epoll" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Epoll 简析
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Epoll 简析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 核心组件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 工作流程
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-et-vs-lt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 边缘触发（ET） vs 水平触发（LT）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3 边缘触发（ET） vs 水平触发（LT）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#331-level-triggered-lt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.1 水平触发（Level-Triggered, LT）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#332-edge-triggered-et" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.2 边缘触发（Edge-Triggered, ET）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#333-goet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.3 go采用的et模式
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-netpoller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Netpoller
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Netpoller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-polldesc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 核心结构体pollDesc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-111" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 1:1:1 绑定架构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 核心接口
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 总结
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11.%20%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B--%E5%90%8CGMP%E6%A8%A1%E5%9E%8B%E5%8D%8F%E4%BD%9C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. 网络模型  同GMP模型协作
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12.%20%E5%B9%B6%E5%8F%91%E5%90%8C%E6%AD%A5--channel%20%26%20select/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. 并发同步  channel &amp; select
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13.%20%E5%B9%B6%E5%8F%91%E5%90%8C%E6%AD%A5--mutex%20%26%20rwmutex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. 并发同步  mutex &amp; rwmutex
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14.%20sync.Pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. sync.Pool
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15.%20map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2">
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    系统架构
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    系统架构
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/00.%20%E7%A2%B3%E6%99%AE%E6%83%A0%E7%B3%BB%E7%BB%9F%E6%BC%94%E8%BF%9B/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00. 碳普惠系统演进
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 前言
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. 前言">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 从一段代码开始
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 异步非阻塞
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-bio-vs-multiplexing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. BIO vs Multiplexing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. BIO vs Multiplexing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-io-bio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 传统阻塞 I/O (BIO)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 I/O 多路复用
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-epoll" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Epoll 简析
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Epoll 简析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 核心组件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 工作流程
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-et-vs-lt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 边缘触发（ET） vs 水平触发（LT）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3 边缘触发（ET） vs 水平触发（LT）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#331-level-triggered-lt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.1 水平触发（Level-Triggered, LT）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#332-edge-triggered-et" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.2 边缘触发（Edge-Triggered, ET）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#333-goet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.3 go采用的et模式
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-netpoller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Netpoller
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Netpoller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-polldesc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 核心结构体pollDesc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-111" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 1:1:1 绑定架构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 核心接口
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 总结
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<p><span style="color:gray; font-size:0.9em;">📄 本文共 3305 字，预计阅读 8 分钟</span></p>
+<h1 id="10-io">10. 网络模型--IO多路复用</h1>
+<h2 id="1">1. 前言</h2>
+<h3 id="11">1.1 从一段代码开始</h3>
+<p>当我们使用go进行网络编程时，如果直接引用<code>net/http</code>的包，那么代码大致如下：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">handler</span><span class="p">(</span><span class="nx">w</span><span class="w"> </span><span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="c1">// 1. 读取网络请求 Body</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nx">body</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">io</span><span class="p">.</span><span class="nx">ReadAll</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">Body</span><span class="p">)</span><span class="w"> </span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="c1">// 2. 业务处理...</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="c1">// 3. 写入网络响应</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nx">w</span><span class="p">.</span><span class="nx">Write</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="s">"Hello, World!"</span><span class="p">))</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">}</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="kd">func</span><span class="w"> </span><span class="nx">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="nx">http</span><span class="p">.</span><span class="nx">HandleFunc</span><span class="p">(</span><span class="s">"/"</span><span class="p">,</span><span class="w"> </span><span class="nx">handler</span><span class="p">)</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">    </span><span class="nx">http</span><span class="p">.</span><span class="nx">ListenAndServe</span><span class="p">(</span><span class="s">":8080"</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="p">}</span>
+</code></pre></div>
+<p>在这段代码中：</p>
+<ul>
+<li><code>r.Body.Read</code> 并没有立即返回 <code>EAGAIN</code> 错误让我们重试，而是直到数据读完。</li>
+<li><code>w.Write</code> 也没有要求我们注册可写事件的回调。</li>
+</ul>
+<p>我们沿着上述代码深挖，从<code>w.Write</code>方法着手，在<code>net/http/server.go</code>中可以看到如下逻辑：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// ResponseWriter 的底层实现</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kd">type</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nx">conn</span><span class="w"> </span><span class="o">*</span><span class="nx">conn</span><span class="w">       </span><span class="c1">// 引用了底层的 HTTP 连接对象</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="c1">// ...</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">}</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">w</span><span class="w"> </span><span class="o">*</span><span class="nx">response</span><span class="p">)</span><span class="w"> </span><span class="nx">Write</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">[]</span><span class="kt">byte</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nx">n</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="c1">// ... 经过一系列缓冲区处理 ...</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">w</span><span class="p">.</span><span class="nx">conn</span><span class="p">.</span><span class="nx">bufw</span><span class="p">.</span><span class="nx">Write</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span><span class="w"> </span><span class="c1">// 最终调用 bufio 写入</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="p">}</span>
+</code></pre></div>
+<p><code>w.conn</code> 结构体中持有一个核心成员 <code>rwc</code> (ReadWriteCloser)，它实际上就是 <code>net.Conn</code> 接口的实现，也就是<code>net/http</code>只是对TCP连接的一层协议包装，核心功能还是在<code>net</code>库中实现。</p>
+<h3 id="12">1.2 异步非阻塞</h3>
+<p>当我们调用 <code>net.Conn.Read</code> 时，调用链会经过 <code>TCPConn</code> -&gt; <code>netFD</code> -&gt; <code>poll.FD</code>。在<code>internal/poll/fd_unix.go</code>中，可以发现为什么在应用层调用的类似于阻塞，但实际逻辑却是非阻塞的原因。我截取了一部分代码片段如下：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">fd</span><span class="w"> </span><span class="o">*</span><span class="nx">FD</span><span class="p">)</span><span class="w"> </span><span class="nx">Read</span><span class="p">(</span><span class="nx">p</span><span class="w"> </span><span class="p">[]</span><span class="kt">byte</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="c1">// ... 锁处理 ...</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="c1">// 1. 尝试直接进行系统调用 (syscall.Read)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">        </span><span class="nx">n</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">startRead</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span><span class="w"> </span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">        </span><span class="c1">// 2. 如果系统调用成功，或者发生了非 I/O 错误，直接返回</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nx">n</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">        </span><span class="c1">// 3. 如果系统调用返回 syscall.EAGAIN.</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">        </span><span class="c1">// 说明内核缓冲区空了，没有数据可读</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">syscall</span><span class="p">.</span><span class="nx">EAGAIN</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">            </span><span class="c1">// 4. 调用 waitRead，挂起当前 goroutine</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">fd</span><span class="p">.</span><span class="nx">pd</span><span class="p">.</span><span class="nx">waitRead</span><span class="p">(</span><span class="nx">fd</span><span class="p">.</span><span class="nx">isFile</span><span class="p">);</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">                </span><span class="k">continue</span><span class="w"> </span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">            </span><span class="p">}</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">n</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="p">}</span>
+</code></pre></div>
+<p>go针对以往需要（例如cpp编程中）用户手动去处理的内容进行了封装，所以直接调用http包的方法就和阻塞调用一样，其底层实现是非阻塞的，而这种非阻塞逻辑的实现则是依赖操作系统的<strong>I/O 多路复用技术</strong>。</p>
+<hr>
+<h2 id="2-bio-vs-multiplexing">2. BIO vs Multiplexing</h2>
+<p>要理解 Netpoller 的设计必要性，首先简单回顾下高性能网络编程的演进史。</p>
+<h3 id="21-io-bio">2.1 传统阻塞 I/O (BIO)</h3>
+<p>在 BIO 模型中，采用 <strong>Thread-per-Connection</strong> 模式。</p>
+<ul>
+<li><strong>机制</strong>：每一个 Client 连接必须独占一个操作系统线程。</li>
+<li><strong>痛点</strong>：线程栈与内核调度开销随连接数线性增长（默认栈常见 MB 级），连接数上万时内存与上下文切换成本都会迅速压垮吞吐。</li>
+</ul>
+<h3 id="22-io">2.2 I/O 多路复用</h3>
+<p>多路复用引入了一个代理机制（<code>select/poll/epoll</code>）。</p>
+<ul>
+<li>
+<p><strong>机制</strong>：业务线程不再对某个socket做阻塞式等待，而是把一组 fd 注册到同一个事件监听集合，随后阻塞在一次系统调用（如 <code>epoll_wait</code>）上，等待内核返回就绪事件列表；线程拿到就绪 fd 后再执行对应的非阻塞读写与业务处理。</p>
+</li>
+<li>
+<p><strong>收益</strong>：</p>
+<ul>
+<li><strong>等待与处理解耦</strong>，用少量线程即可完成海量连接的 I/O 就绪等待与分发（典型是 1~N 个 I/O 轮询线程服务大量连接，业务逻辑可由线程池/协程调度执行）。</li>
+<li><strong>事件就绪驱动</strong>，内核只返回已就绪的 fd（成本主要与就绪事件数相关），避免对大量空闲连接进行轮询扫描。</li>
+</ul>
+</li>
+</ul>
+<p>上述描述了bio和i/o多路复用的区别，通过图1进一步了解当处理网络连接时，两种模型区别。
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/bio_vs_epoll.png" data-desc-position="bottom"><img alt="" src="../../../assets/bio_vs_epoll.png"></a>
+<em>图 1：bio vs multiplexing</em></p>
+<ul>
+<li><strong>BIO</strong>：1:1的模式，高上下文切换与高内存占用是其核心问题。</li>
+<li><strong>Multiplexing</strong>：通过 <code>epoll</code> 收敛连接，即使监控百万连接，若仅少量连接活跃，用户态主要处理的是这少量就绪事件（近似 O(k)）。</li>
+</ul>
+<hr>
+<h2 id="3-epoll">3.  Epoll 简析</h2>
+<p>在 Linux 平台上，Go Netpoller 的核心基于 <code>epoll</code>模型实现。<code>epoll</code>模型的核心功能和主要结构如图2所示。
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/10-%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B-epoll%E6%A8%A1%E5%9E%8B.png" data-desc-position="bottom"><img alt="" src="../../../assets/10-%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B-epoll%E6%A8%A1%E5%9E%8B.png"></a>
+<em>图2: epoll模型</em></p>
+<p>从上图可以清晰地了解到，<code>epoll</code> 模型通过 <code>epoll_ctl</code> 进行文件描述符的注册（<em>存入红黑树</em>）。一旦有数据准备好，内核会通过回调机制将对应的就绪事件（fd）加入到<code>rdllist</code>中，用户进程（netpoller）随后通过<code>epoll_wait</code> 直接获取这些处于就绪状态的文件描述符。</p>
+<h3 id="31">3.1 核心组件</h3>
+<p>不同于 <code>select/poll</code> 在每次调用时都需要把待监控的 fd 列表传入内核并逐个扫描（时间开销与监控 fd 数 N 相关），<code>epoll</code> 在内核侧将注册集合与就绪队列分离维护，从而避免对大量空闲连接做重复遍历：</p>
+<ol>
+<li><strong>注册集合（图2-红黑树）</strong>：存储所有通过 <code>epoll_ctl(ADD/MOD/DEL)</code> 注册的文件描述符（fd）及其关注的事件类型（如可读/可写/错误/挂起等）。<code>epoll_ctl</code> 的职责是对该集合进行增删改，建立或更新“fd → 事件关注”的映射关系。</li>
+<li><strong>就绪队列（图2-rdllist）</strong>：当某个 fd 的状态变化并满足关注条件时，内核会将其标记为就绪并加入（或更新）就绪队列，用于汇总当前需要处理的事件。<code>epoll_wait</code> 阻塞等待就绪事件：无事件时睡眠直至超时或被唤醒；有事件时将一批就绪事件批量拷贝到用户态并返回。因此用户态的处理成本主要与本次返回的就绪事件数 k相关，而不是与被监控 fd 的总数线性相关。</li>
+</ol>
+<h3 id="32">3.2 工作流程</h3>
+<ul>
+<li>
+<p><strong>创建 epoll 实例</strong></p>
+<ul>
+<li>用户态调用 <code>epoll_create1()</code> 。内核创建<code>eventepoll</code>对象，并初始化并维护对应的数据结构（例如：红黑树/双向链表）。</li>
+</ul>
+</li>
+<li>
+<p><strong>注册/更新监控对象</strong></p>
+<ul>
+<li>用户态调用 <code>epoll_ctl</code>。内核在红黑树中查找或插入节点，同时在对应的 Socket 等待队列中<strong>注册回调函数</strong>。</li>
+</ul>
+</li>
+<li>
+<p><strong>事件就绪与入队</strong></p>
+<ul>
+<li>当网络包到达，硬件中断触发协议栈处理，最终触发 socket 状态变化。<strong>之前注册的回调函数被执行</strong>，自动将该 socket 的引用节点添加到 epoll 实例的<strong>就绪队列(rdllist)</strong> 中。</li>
+</ul>
+</li>
+<li>
+<p><strong>等待与批量返回（epoll_wait）</strong></p>
+<ul>
+<li>
+<p>用户态调用 <code>epoll_wait(epfd, events, maxevents, timeout)</code> 进入等待：</p>
+<ul>
+<li>若就绪队列为空，则线程(在go中通过将goroutine挂起)睡眠，直到有事件到来或超时；</li>
+<li>若就绪队列非空，则内核将就绪事件批量拷贝到用户态提供的 <code>events[]</code> 数组并返回。</li>
+</ul>
+</li>
+<li>
+<p>用户态对返回的每个就绪 fd 执行非阻塞读写与业务处理；处理完成后再次调用 <code>epoll_wait</code> 进入下一轮事件循环。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="33-et-vs-lt">3.3 边缘触发（ET） vs 水平触发（LT）</h3>
+<h4 id="331-level-triggered-lt">3.3.1 水平触发（Level-Triggered, LT）</h4>
+<p>水平触发的语义是“<strong>只要条件仍然满足，就会持续通知</strong>”。以可读事件为例：只要 socket 的接收缓冲区里还有数据没被读完，<code>epoll_wait</code> 每次都会持续返回该 fd 的可读事件。对可写事件同理，只要发送缓冲区仍然有空间，<code>epoll_wait</code> 会反复返回可写事件。<br>
+这种模式的优点是实现简单、容错更强：即使用户态这次没把数据读干净、或者业务处理被打断，下一轮 <code>epoll_wait</code> 仍然能再次拿到事件，不容易“漏事件”。代价是：如果用户态处理得慢，可能会出现同一个活跃 fd 被频繁返回，带来一定的重复唤醒与调度开销。</p>
+<h4 id="332-edge-triggered-et">3.3.2 边缘触发（Edge-Triggered, ET）</h4>
+<p>边缘触发的语义是“<strong>只在状态发生变化的瞬间通知一次</strong>”。以可读事件为例：只有当接收缓冲区从 <strong>“无数据 → 有数据”</strong> 发生跃迁时才触发通知；如果用户态没有把数据读到 <code>EAGAIN</code>，后续即使缓冲区里仍然有剩余数据，epoll 也<strong>可能不会再次通知</strong>（除非又有新的数据到达引发新的跃迁）。因此 ET 的正确使用方式为：<strong>fd 必须是 non-blocking，并且读/写需要循环进行，直到返回 <code>EAGAIN</code>（或读到 0 表示对端关闭）</strong>。
+ET 的优势在于：在高活跃连接场景下，它可以减少重复事件回传与无效唤醒，更“事件驱动”。但也存在实现上更容易踩坑 <em>（go的net库已经帮我们进行了封装，在应用层开发完全不用担心😁）</em>，常见问题是“没有读到 <code>EAGAIN</code> 导致后续不再收到通知”，表现为连接假死或吞吐下降。</p>
+<h4 id="333-goet">3.3.3 go采用的et模式</h4>
+<p>在 linux上，Go runtime 的 netpoller 使用 epoll，并以 <strong>边缘触发（EPOLLET）</strong> 方式注册事件：在 <code>runtime/netpoll_epoll.go</code> 中可以看到注册掩码包含 <code>EPOLLET</code>。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">netpollopen</span><span class="p">(</span><span class="nx">fd</span><span class="w"> </span><span class="kt">uintptr</span><span class="p">,</span><span class="w"> </span><span class="nx">pd</span><span class="w"> </span><span class="o">*</span><span class="nx">pollDesc</span><span class="p">)</span><span class="w"> </span><span class="kt">int32</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">ev</span><span class="w"> </span><span class="nx">epollevent</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="c1">// EPOLLET = Edge Triggered</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="nx">ev</span><span class="p">.</span><span class="nx">events</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">_EPOLLIN</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">_EPOLLOUT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">_EPOLLRDHUP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">_EPOLLET</span><span class="w"> </span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="o">*</span><span class="p">(</span><span class="o">**</span><span class="nx">pollDesc</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ev</span><span class="p">.</span><span class="nx">data</span><span class="p">))</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">pd</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">epollctl</span><span class="p">(</span><span class="nx">epfd</span><span class="p">,</span><span class="w"> </span><span class="nx">_EPOLL_CTL_ADD</span><span class="p">,</span><span class="w"> </span><span class="nb">int32</span><span class="p">(</span><span class="nx">fd</span><span class="p">),</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">ev</span><span class="p">)</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">}</span>
+</code></pre></div>
+<p>在搞清楚lt和et的主要区别后，我们可以结合go本身的gmp模型采用et模式的主要原因：</p>
+<ol>
+<li><strong>减少上下文切换</strong>： Go 程序通常伴随着成千上万个 Goroutine。如果使用 LT 模式，当一个 socket 有数据且 Goroutine 处理稍慢时，<code>epoll_wait</code> 所在的线程（M）可能会被反复唤醒，告知同一个 fd 就绪,这对于调度器来说是巨大的干扰。</li>
+<li><strong>与 GMP 模型的完美配合</strong>： Go 的 Runtime 设计了一种机制，让同步的写法享受异步的性能。 当 Goroutine 发起 <code>Read()</code> 调用时，底层其实是在进行非阻塞 I/O。</li>
+</ol>
+<hr>
+<h2 id="4-netpoller">4. Netpoller</h2>
+<p>Go runtime 为了在不同操作系统上统一网络 I/O 的等待与唤醒机制，引入了 <strong>netpoller抽象层</strong>：在 Linux 上基于 <code>epoll</code>，在 macOS/BSD 上基于 kqueue，在 Windows 上基于 IOCP。应用层仍以同步风格调用 <code>Read/Write</code>，但 runtime 会在底层通过“非阻塞 fd + 事件轮询 + goroutine 挂起/唤醒”来实现高并发伸缩。</p>
+<h3 id="41-polldesc">4.1 核心结构体<code>pollDesc</code></h3>
+<p><code>pollDesc</code> 是 Runtime 层面描述网络文件描述符（FD）的核心结构，它是连接底层系统 FD 与上层 Goroutine 的桥梁。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// runtime/netpoll.go</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kd">type</span><span class="w"> </span><span class="nx">pollDesc</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">   </span><span class="nx">link</span><span class="w"> </span><span class="o">*</span><span class="nx">pollDesc</span><span class="w"> </span><span class="c1">//链表指针，用于在 runtime 内部管理 pollDesc 对象池 </span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">   </span><span class="nx">fd</span><span class="w"> </span><span class="kt">uintptr</span><span class="w"> </span><span class="c1">//系统底层的文件描述符 </span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">   </span><span class="c1">// rg 和 wg 是原子操作的状态机，可能的值为： </span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">   </span><span class="c1">// 0: 初始状态 (pdNil) </span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">   </span><span class="c1">// 1: IO 准备就绪 (pdReady) </span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">   </span><span class="c1">// 2: 等待中 (pdWait) </span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">   </span><span class="c1">// &lt;G的地址&gt;: 具体的 Goroutine 阻塞在这里 </span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">   </span><span class="nx">rg</span><span class="w"> </span><span class="kt">uintptr</span><span class="w"> </span><span class="c1">// Read Group:读操作相关的状态或 G 地址 </span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">   </span><span class="nx">wg</span><span class="w"> </span><span class="kt">uintptr</span><span class="w"> </span><span class="c1">// Write Group:写操作相关的状态或 G 地址</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><strong>状态机机制 (CAS)</strong>：<code>rg</code> 和 <code>wg</code> 并不总是直接存储 Goroutine 的地址。它们通过原子操作（CAS）在 <code>pdReady</code>（就绪）、<code>pdWait</code>（等待中）和 <code>G pointer</code>（休眠的 G）之间流转。这解决了多线程下 Netpoller 唤醒与 Goroutine 自身状态变更的竞争问题。</li>
+</ul>
+<h3 id="42-111">4.2 1:1:1 绑定架构</h3>
+<p>为了支撑海量并发连接，Go并没有采用全局中心化的方式来管理所有的等待 Goroutine，而是建立了一套去中心化的资源绑定体系。在网络模型中，存在严格的 <strong>1:1:1</strong> 映射关系：</p>
+<blockquote>
+<p>一个网络连接 (<code>net.Conn</code>) 对应一个系统文件描述符 (<code>FD</code>)，进而对应一个独立的轮询描述符 (<code>pollDesc</code>)。</p>
+</blockquote>
+<p>这种架构设计带来了以下关键特性：</p>
+<ol>
+<li><strong>分布式状态管理</strong>：当系统中存在 10 万个 TCP 连接时，内存中就会对应存在 10 万个 <code>pollDesc</code> 结构体实例。每个 <code>pollDesc</code> 仅负责<strong>维护当前这一个连接</strong>的状态和等待队列。</li>
+<li><strong>O(1)复杂度的调度</strong>：由于 <code>pollDesc</code> 绑定在具体的连接对象上，当 <code>epoll_wait</code> 返回就绪事件时，内核直接通过 <code>epoll_data</code> 指针返回该 FD 对应的 <code>pollDesc</code> 内存地址。Runtime 可以直接访问该结构体的 <code>rg</code> 字段找到目标 G，整个过程不随连接数的增加而变慢。 </li>
+<li><strong>竞态隔离</strong>：不同连接的 I/O 操作完全隔离。Connection A 的读写操作只会访问 Connection A 独享的 <code>pollDesc</code>，绝不会干扰 Connection B 的状态。这意味着锁的粒度被分散到了每个连接级别，极大地降低了锁竞争。</li>
+</ol>
+<p>映射关系示意图如下所示：</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/10-%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B-%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB.png" data-desc-position="bottom"><img alt="" src="../../../assets/10-%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B-%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB.png"></a>
+<em>图3: netpoller映射关系</em></p>
+<h3 id="43">4.3 核心接口</h3>
+<p>Go 的网络层最终会调用以下三个底层函数，它们与<code>epoll</code>模型的底层方法一一对应：</p>
+<table>
+<thead>
+<tr>
+<th><strong>Go Runtime 函数</strong></th>
+<th><strong>Linux系统调用</strong></th>
+<th><strong>作用描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>netpollinit()</code></strong></td>
+<td><code>epoll_create1</code></td>
+<td><strong>初始化</strong>：创建一个 epoll 实例（epfd），通常在程序启动或首次使用网络时调用一次。</td>
+</tr>
+<tr>
+<td><strong><code>netpollopen(fd, pd)</code></strong></td>
+<td><code>epoll_ctl</code></td>
+<td><strong>注册</strong>：将新的 fd 添加到 epoll 监听集合中。</td>
+</tr>
+<tr>
+<td><strong><code>netpoll(delay)</code></strong></td>
+<td><code>epoll_wait</code></td>
+<td><strong>轮询</strong>：扫描就绪的网络事件。<br>1. 调用 <code>epoll_wait</code> 获取就绪的 fd 列表。<br>2. 根据 fd 找到对应的<code>pollDesc</code>。<br>3. 查看 <code>rg/wg</code>，取出其中阻塞的 goroutine。<br>4. 返回一个可运行的goroutine链表(<code>gList</code>) 给调度器。</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5">5. 总结</h2>
+<p>至此，我们已经梳理了 Go 网络库的设计原理，理解了 Netpoller 如何利用 <code>epoll</code> 模型高效处理海量并发连接。下一篇，我们将从GMP调度的维度出发，通过源码级视角分析 Netpoller 与 Runtime 的联动机制。我们将详细探讨 Goroutine 的生命周期流转，以及调度器如何利用P的本地队列等特性来优化性能。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.instant", "navigation.tracking", "toc.follow", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../javascripts/text-mml-svg.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

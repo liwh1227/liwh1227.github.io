@@ -1,0 +1,1833 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://liwh1227.github.io/posts/go/01.%20Goroutine%28G%29/">
+      
+      
+        <link rel="prev" href="../00.%20GMP%20%E6%A8%A1%E5%9E%8B%E6%80%BB%E8%A7%88/">
+      
+      
+        <link rel="next" href="../02.%20Machine%28M%29/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>01. Goroutine(G) - LIWH.DEV</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#01-goroutineg" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="LIWH.DEV" class="md-header__button md-logo" aria-label="LIWH.DEV" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LIWH.DEV
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              01. Goroutine(G)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="white" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/liwh1227/liwh1227.github.io" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    liwh1227
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../00.%20GMP%20%E6%A8%A1%E5%9E%8B%E6%80%BB%E8%A7%88/" class="md-tabs__link">
+          
+  
+  
+  Posts
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="LIWH.DEV" class="md-nav__button md-logo" aria-label="LIWH.DEV" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    LIWH.DEV
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/liwh1227/liwh1227.github.io" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    liwh1227
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Posts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Posts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../00.%20GMP%20%E6%A8%A1%E5%9E%8B%E6%80%BB%E8%A7%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00. GMP 模型总览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01. Goroutine(G)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01. Goroutine(G)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 核心结构
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. 核心结构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 源码
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 成员说明
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.2 成员说明">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stackguard0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stackguard0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        m
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sched" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sched
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#atomicstatus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        atomicstatus
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        goid
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 生命周期
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. 生命周期">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_gidle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _Gidle (空闲/未初始化)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_gdead" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _Gdead (死亡/可复用)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_grunnable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _Grunnable (就绪态)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_grunning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _Grunning (运行态)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_gwaiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _Gwaiting (等待态)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_gsyscall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _Gsyscall (系统调用)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 总结
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. 总结">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 资源复用与轻量级
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-m-g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 M 与 G 的阻塞解耦
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 协作与抢占的平衡
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02.%20Machine%28M%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02. Machine(M)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03.%20Processor%28P%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03. Processor(P)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mheap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04. 内存管理  mheap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mcentral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05. 内存管理  mcentral
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mcache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06. 内存管理  mcache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07.%20GC--%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0%E6%B3%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07. GC  三色标记法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08.%20GC--%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08. GC  混合写屏障
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09.%20GC--%E8%B0%83%E5%BA%A6%E4%B8%8E%E7%9B%AE%E6%A0%87%E6%8E%A7%E5%88%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09. GC  调度与目标控制
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10.%20%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B--IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. 网络模型  IO多路复用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11.%20%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B--%E5%90%8CGMP%E6%A8%A1%E5%9E%8B%E5%8D%8F%E4%BD%9C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. 网络模型  同GMP模型协作
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12.%20%E5%B9%B6%E5%8F%91%E5%90%8C%E6%AD%A5--channel%20%26%20select/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. 并发同步  channel &amp; select
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13.%20%E5%B9%B6%E5%8F%91%E5%90%8C%E6%AD%A5--mutex%20%26%20rwmutex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. 并发同步  mutex &amp; rwmutex
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14.%20sync.Pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. sync.Pool
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15.%20map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2">
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    系统架构
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    系统架构
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/00.%20%E7%A2%B3%E6%99%AE%E6%83%A0%E7%B3%BB%E7%BB%9F%E6%BC%94%E8%BF%9B/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00. 碳普惠系统演进
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 核心结构
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. 核心结构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 源码
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 成员说明
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.2 成员说明">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stackguard0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stackguard0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        m
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sched" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sched
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#atomicstatus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        atomicstatus
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        goid
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 生命周期
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. 生命周期">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_gidle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _Gidle (空闲/未初始化)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_gdead" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _Gdead (死亡/可复用)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_grunnable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _Grunnable (就绪态)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_grunning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _Grunning (运行态)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_gwaiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _Gwaiting (等待态)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_gsyscall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        _Gsyscall (系统调用)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 总结
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. 总结">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 资源复用与轻量级
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-m-g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 M 与 G 的阻塞解耦
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 协作与抢占的平衡
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<p><span style="color:gray; font-size:0.9em;">📄 本文共 2084 字，预计阅读 5 分钟</span></p>
+<h1 id="01-goroutineg">01. Goroutine(G)</h1>
+<div class="admonition abstract">
+<p class="admonition-title">Abstract</p>
+<p><strong>Keywords</strong>: <em>Goroutine,  生命周期</em></p>
+</div>
+<hr>
+<h2 id="1">1. 核心结构</h2>
+<p>我们从 Goroutine 的源码及其核心状态开始分析，结合其整个生命周期的变换及 runtime 函数调用进行剖析。</p>
+<h3 id="11">1.1 源码</h3>
+<p>下面的代码片段基于 <code>go1.24.5</code> 版本，展示了 <code>g</code> 结构体中与调度息息相关的关键字段。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">g</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="nx">stack</span><span class="w">        </span><span class="nx">stack</span><span class="w">         </span><span class="c1">// 栈内存范围 [stack.lo, stack.hi)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nx">stackguard0</span><span class="w">  </span><span class="kt">uintptr</span><span class="w">       </span><span class="c1">// 关键字段：用于栈溢出检测和抢占调度检查</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nx">m</span><span class="w">            </span><span class="o">*</span><span class="nx">m</span><span class="w">            </span><span class="c1">// 当前绑定执行该 G 的系统线程 M</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="nx">sched</span><span class="w">        </span><span class="nx">gobuf</span><span class="w">         </span><span class="c1">// 上下文保存核心 (SP, PC, BP 等)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="nx">atomicstatus</span><span class="w"> </span><span class="nx">atomic</span><span class="p">.</span><span class="nx">Uint32</span><span class="w"> </span><span class="c1">// 原子操作的生命周期状态</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="nx">_panic</span><span class="w">       </span><span class="o">*</span><span class="nx">_panic</span><span class="w">       </span><span class="c1">// 当前 G 的 panic 链表</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nx">_defer</span><span class="w">       </span><span class="o">*</span><span class="nx">_defer</span><span class="w">       </span><span class="c1">// 当前 G 的 defer 链表</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="nx">goid</span><span class="w">         </span><span class="kt">uint64</span><span class="w">        </span><span class="c1">// Goroutine 的唯一标识</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="c1">// ... 其他字段</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="12">1.2 成员说明</h3>
+<h4 id="stack">stack</h4>
+<p><code>stack</code> 字段描述了 Goroutine 的执行栈内存范围。这是 Goroutine 与操作系统线程（Thread）的重要区别之一：Goroutine 的栈初始大小仅为 <strong>2KB</strong>，但支持<strong>动态扩容</strong>。<code>lo</code> 和 <code>hi</code> 分别记录了当前栈空间的低地址和高地址边界。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">stack</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="nx">lo</span><span class="w"> </span><span class="kt">uintptr</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nx">hi</span><span class="w"> </span><span class="kt">uintptr</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p">}</span>
+</code></pre></div>
+<h4 id="stackguard0">stackguard0</h4>
+<p>这是一个具备<strong>双重用途</strong>的关键字段，直接参与 Go 的协作式调度与栈管理：</p>
+<ul>
+<li><strong>栈溢出检测</strong>：Go 编译器会在函数头部插入检查指令，比较当前的栈指针（SP）是否小于 <code>stackguard0</code>。若小于，说明栈空间不足，触发 <code>runtime.morestack</code> 进行栈扩容。</li>
+<li><strong>抢占调度 (Preemption)</strong>[^3]：当 sysmon 后台监控线程发现某个 G 运行时间过长（&gt;10ms）时，会向该 G 所在的操作系统线程（M）发送一个 <strong><code>SIGURG</code> 信号</strong>。操作系统中断当前线程的执行并进入内核态，随后回到用户态执行 Go 运行时的信号处理函数（<code>sighandler</code>）。该处理函数会检测到这是一个抢占信号，于是修改当前 G 的程序计数器（PC），使其在恢复执行时立即跳转到 <strong><code>runtime.asyncPreempt</code></strong> 汇编函数。该函数会保存所有寄存器状态，将 G 的状态修改为 <code>_Grunnable</code> 并放入全局队列，最后执行 <code>schedule()</code> 让出 CPU。</li>
+</ul>
+<h4 id="m">m</h4>
+<p>代表当前的 <strong>Machine</strong>。在 GMP 模型中，G 必须绑定到 P，然后由 M 来驱动执行。</p>
+<ul>
+<li>该字段指向当前正在运行该 G 的 M。</li>
+<li>当 G 被放回队列（如 <code>_Grunnable</code>）或进入阻塞时，该字段通常会被置空或更新，标志着 G 与 M 的解绑。</li>
+</ul>
+<h4 id="sched">sched</h4>
+<p>这是<strong>上下文切换</strong> 的数据载体。<code>gobuf</code> 结构体用于保存 CPU 的寄存器状态，以便“恢复现场”：</p>
+<ul>
+<li><strong>sp (Stack Pointer)</strong>: 栈顶指针，用于恢复函数调用栈。</li>
+<li><strong>pc (Program Counter)</strong>: 程序计数器，记录下一条需要执行的指令地址。</li>
+<li><strong>bp (Base Pointer)</strong>: 栈基址指针，辅助调试和栈回溯。</li>
+<li><strong>ctxt</strong>: 闭包上下文等。</li>
+</ul>
+<p>当 G 被暂停（例如 <code>gopark</code> 挂起或被抢占）时，当前的寄存器值会被保存到 <code>sched</code> 中；当 G 被再次选中调度时，Runtime 会将 <code>sched</code> 中的值加载回 CPU 寄存器。</p>
+<h4 id="atomicstatus">atomicstatus</h4>
+<p>记录 Goroutine 的生命周期状态。这是一个原子变量，确保并发状态流转的安全性。<em>(具体状态定义见下文“生命周期”章节)</em></p>
+<h4 id="goid">goid</h4>
+<p>Goroutine 的唯一标识符。</p>
+<ul>
+<li><strong>注意</strong>：Go 官方未暴露获取 goid 的 Public API，旨在防止开发者滥用 <strong>GLS (Goroutine Local Storage)</strong> 模式，鼓励使用 <code>context.Context</code> 进行隐式参数传递。但在 Runtime 内部追踪和调试（Trace/pprof）时，它是区分 G 的关键索引。</li>
+</ul>
+<hr>
+<h2 id="2">2. 生命周期</h2>
+<p>Goroutine 的生命周期由 <code>atomicstatus</code> 字段记录，其核心流转逻辑如图1所示：
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/goroutine-status.png" data-desc-position="bottom"><img alt="" src="../../../assets/goroutine-status.png"></a>
+<em>图 1: Goroutine 状态流转图</em></p>
+<p>以下是各状态的深度解析：</p>
+<h3 id="_gidle"><code>_Gidle</code> (空闲/未初始化)</h3>
+<p>G 被分配了内存但尚未初始化的状态。在现代 Go Runtime 中，只有全新申请的 G 才会短暂处于此状态。</p>
+<h3 id="_gdead"><code>_Gdead</code> (死亡/可复用)</h3>
+<p>G 已完成执行或刚被初始化清理后的状态。</p>
+<ul>
+<li><strong>复用机制</strong>：处于此状态的 G 会被缓存在 P 的本地 <code>gFree</code> 列表或全局 <code>sched.gFree</code> 列表中。</li>
+<li><strong>触发点</strong>：当用户调用 <code>go func()</code> 时，Runtime 会优先从 <code>gFree</code> 中取出一个 <code>_Gdead</code> 的 G 进行复用（Re-use），将其重置为 <code>_Grunnable</code>，从而避免频繁的内存分配与 GC 压力。</li>
+</ul>
+<h3 id="_grunnable"><code>_Grunnable</code> (就绪态)</h3>
+<p>G 已经准备好运行，正在等待被调度。</p>
+<ul>
+<li><strong>位置</strong>：它们可能存在于 <strong>全局运行队列 (Global Run Queue)</strong>、<strong>P 的本地运行队列 (Local Run Queue)</strong> 或 <strong><code>runnext</code> (高优先级插队位置)</strong> 中。</li>
+<li><strong>转换</strong>：一旦调度器（M）选中了它，它就会与 M 绑定，转换为 <code>_Grunning</code>。</li>
+</ul>
+<h3 id="_grunning"><code>_Grunning</code> (运行态)</h3>
+<p>G 正在 M 上执行用户态代码。这是实际消耗 CPU 的阶段。从该状态出发的转换路径最为复杂：</p>
+<ol>
+<li><strong>用户态阻塞 (To <code>_Gwaiting</code>)</strong><ul>
+<li><strong>场景</strong>：Channel 读写、Mutex 加锁、<code>time.Sleep</code>、Select 等待、网络 I/O。</li>
+<li><strong>关键点</strong>：此时 <strong>M 不会阻塞</strong>。M 会执行 <code>gopark</code> 将 G 换出，并立即寻找下一个可执行的 G。这是 Go 高并发的核心优势。</li>
+</ul>
+</li>
+<li><strong>系统调用阻塞 (To <code>_Gsyscall</code>)</strong><ul>
+<li><strong>场景</strong>：文件 I/O、CGO 调用等。</li>
+<li><strong>关键点</strong>：此时 <strong>M 会陷入内核态阻塞</strong>。为了避免 P 闲置，P 会与 M 分离。</li>
+</ul>
+</li>
+<li><strong>被抢占或主动让出 (To <code>_Grunnable</code>)</strong><ul>
+<li><strong>场景</strong>：执行时间过长被 sysmon 抢占，或调用 <code>runtime.Gosched()</code>。</li>
+<li><strong>关键点</strong>：G 会被放回全局队列，M 继续执行其他任务。</li>
+</ul>
+</li>
+<li><strong>执行结束 (To <code>_Gdead</code>)</strong><ul>
+<li><strong>场景</strong>：函数返回或 <code>runtime.Goexit()</code>。</li>
+<li><strong>关键点</strong>：G 进入 <code>gFree</code> 列表等待复用。</li>
+</ul>
+</li>
+</ol>
+<h3 id="_gwaiting"><code>_Gwaiting</code> (等待态)</h3>
+<p>在此状态下，G 处于用户态阻塞，而 M 是活跃的。Runtime 将 G 挂载到特定的等待队列中，直到条件满足（如数据到达、锁释放）才通过 goready 将其唤醒为 _Grunnable。</p>
+<table>
+<thead>
+<tr>
+<th><strong>阻塞原因</strong></th>
+<th><strong>G 的状态</strong></th>
+<th><strong>G 栖身的数据结构 (Waiting Queue)</strong></th>
+<th><strong>关键中间层</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Channel</strong></td>
+<td><code>_Gwaiting</code></td>
+<td><strong>hchan.recvq</strong> 或 <strong>hchan.sendq</strong></td>
+<td><code>sudog</code></td>
+</tr>
+<tr>
+<td><strong>Mutex</strong></td>
+<td><code>_Gwaiting</code></td>
+<td><strong>semaRoot</strong> (全局信号量树)</td>
+<td><code>sudog</code></td>
+</tr>
+<tr>
+<td><strong>Sleep</strong></td>
+<td><code>_Gwaiting</code></td>
+<td><strong>P.timers</strong> (四叉堆/最小堆)</td>
+<td><code>timer</code></td>
+</tr>
+<tr>
+<td><strong>Net I/O</strong></td>
+<td><code>_Gwaiting</code></td>
+<td><strong>Netpoller</strong> (OS Epoll/Kqueue)</td>
+<td><code>pollDesc</code></td>
+</tr>
+<tr>
+<td><strong>Select</strong></td>
+<td><code>_Gwaiting</code></td>
+<td><strong>所有涉及 Channel 的 recvq/sendq</strong></td>
+<td><code>sudog</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_gsyscall"><code>_Gsyscall</code> (系统调用)</h3>
+<p>当 G 调用底层操作系统接口（如磁盘 I/O）时进入此状态。Runtime 对此进行了极致优化：</p>
+<ol>
+<li><strong>Fast Path (乐观返回)</strong><ul>
+<li><strong>场景</strong>：系统调用耗时极短（Sysmon 尚未介入）。</li>
+<li><strong>流程</strong>：M 从内核返回，发现原来的 P 还在（或者抢到了空闲 P）。</li>
+<li><strong>结果</strong>：G 直接切回 <code>_Grunning</code>，<strong>无调度开销</strong>。</li>
+</ul>
+</li>
+<li><strong>Slow Path (悲观排队)</strong><ul>
+<li><strong>场景</strong>：系统调用耗时较长（&gt;10ms），Sysmon 强行剥离了 P。</li>
+<li><strong>流程</strong>：M 返回后发现没有 P 可用。</li>
+<li><strong>结果</strong>：M 将 G 放入<strong>全局队列</strong>（变为 <code>_Grunnable</code>），M 自身解绑并休眠。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="3">3. 总结</h2>
+<p>通过对 <code>g</code> 结构体及其生命周期的分析，我们可以提炼出 Go 调度器（GMP）实现<strong>高吞吐、低延迟</strong>的三大核心设计哲学：</p>
+<h3 id="31">3.1 资源复用与轻量级</h3>
+<ul>
+<li><strong>栈内存</strong>：从 2KB 开始按需扩容，远小于线程的 MB 级别，支撑了百万级并发。</li>
+<li><strong>对象池化</strong>：<code>_Gdead</code> 状态和 <code>gFree</code> 列表的存在，使得 G 并非是一次性资源。高频的 Goroutine 创建与销毁（如 HTTP Server 处理每个请求）实际上是极低成本的<strong>状态重置</strong>，而非昂贵的内存分配。</li>
+</ul>
+<h3 id="32-m-g">3.2 M 与 G 的阻塞解耦</h3>
+<ul>
+<li><strong>用户态阻塞（Gwaiting）</strong>：将 Channel、锁、网络 I/O 等逻辑层面的等待，转换为 Runtime 内部的数据挂载。<strong>G 停工，但 M 不停工</strong>，CPU 始终在全速运转处理计算任务。</li>
+<li><strong>内核态阻塞（Gsyscall）</strong>：对于无法避免的系统调用阻塞，Go 采用了“超时剥离（Handoff）”策略。既保证了短调用的亲和性（Fast Path），又防止了长调用导致 CPU 核心闲置（Slow Path）。</li>
+</ul>
+<h3 id="33">3.3 协作与抢占的平衡</h3>
+<ul>
+<li>Go 早期采用协作式调度（依赖函数调用），但在 1.14+ 引入了基于信号的<strong>异步抢占</strong>。</li>
+<li><code>stackguard0</code> 机制保护了栈安全，还保证了即使是死循环的 G 也无法长时间霸占 P，从而实现了<strong>全局公平性</strong>，防止了系统中出现“饿死”现象。</li>
+</ul>
+<p>综上所述，Goroutine 不仅仅是一个轻量级线程，它是一个<strong>拥有独立栈、独立状态机、且被 Runtime 深度管理的执行单元</strong>。这种设计使得开发者可以用同步的代码逻辑（如 <code>Read</code>），享受到异步非阻塞的高性能内核。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.instant", "navigation.tracking", "toc.follow", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../javascripts/text-mml-svg.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>
