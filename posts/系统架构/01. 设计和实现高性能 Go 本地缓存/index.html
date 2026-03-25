@@ -1,0 +1,2308 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://liwh1227.github.io/posts/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/01.%20%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%AE%9E%E7%8E%B0%E9%AB%98%E6%80%A7%E8%83%BD%20Go%20%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98/">
+      
+      
+        <link rel="prev" href="../00.%20%E7%A2%B3%E6%99%AE%E6%83%A0%E7%B3%BB%E7%BB%9F%E6%BC%94%E8%BF%9B/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>01. 设计和实现高性能 Go 本地缓存 - LIWH.DEV</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#01-go" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="LIWH.DEV" class="md-header__button md-logo" aria-label="LIWH.DEV" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LIWH.DEV
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              01. 设计和实现高性能 Go 本地缓存
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="white" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/liwh1227/liwh1227.github.io" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    liwh1227
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../go/00.%20GMP%20%E6%A8%A1%E5%9E%8B%E6%80%BB%E8%A7%88/" class="md-tabs__link">
+          
+  
+  
+  Posts
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="LIWH.DEV" class="md-nav__button md-logo" aria-label="LIWH.DEV" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    LIWH.DEV
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/liwh1227/liwh1227.github.io" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    liwh1227
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Posts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Posts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1">
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/00.%20GMP%20%E6%A8%A1%E5%9E%8B%E6%80%BB%E8%A7%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00. GMP 模型总览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/01.%20Goroutine%28G%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01. Goroutine(G)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/02.%20Machine%28M%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02. Machine(M)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/03.%20Processor%28P%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03. Processor(P)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/04.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mheap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04. 内存管理  mheap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/05.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mcentral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05. 内存管理  mcentral
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/06.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mcache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06. 内存管理  mcache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/07.%20GC--%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0%E6%B3%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07. GC  三色标记法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/08.%20GC--%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08. GC  混合写屏障
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/09.%20GC--%E8%B0%83%E5%BA%A6%E4%B8%8E%E7%9B%AE%E6%A0%87%E6%8E%A7%E5%88%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09. GC  调度与目标控制
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/10.%20%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B--IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. 网络模型  IO多路复用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/11.%20%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B--%E5%90%8CGMP%E6%A8%A1%E5%9E%8B%E5%8D%8F%E4%BD%9C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. 网络模型  同GMP模型协作
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/12.%20%E5%B9%B6%E5%8F%91%E5%90%8C%E6%AD%A5--channel%20%26%20select/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. 并发同步  channel &amp; select
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/13.%20%E5%B9%B6%E5%8F%91%E5%90%8C%E6%AD%A5--mutex%20%26%20rwmutex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. 并发同步  mutex &amp; rwmutex
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/14.%20sync.Pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. sync.Pool
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/15.%20map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/16.%20errgroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. errgroup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2">
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    浮生半日
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    浮生半日
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E6%B5%AE%E7%94%9F%E5%8D%8A%E6%97%A5/%E6%88%91%E7%9A%84%E5%A7%A5%E5%A7%A5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    我的姥姥
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    系统架构
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    系统架构
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../00.%20%E7%A2%B3%E6%99%AE%E6%83%A0%E7%B3%BB%E7%BB%9F%E6%BC%94%E8%BF%9B/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00. 碳普惠系统演进
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01. 设计和实现高性能 Go 本地缓存
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01. 设计和实现高性能 Go 本地缓存
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 前言
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-go-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Go map 在大数据量缓存场景下的痛点
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Go map 在大数据量缓存场景下的痛点">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-map-rwmutex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 map + RWMutex
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-gc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 GC 扫描风暴
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 其他问题
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-bigcache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. bigcache 的核心设计
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. bigcache 的核心设计">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 架构概览
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 局限
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-tinycache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. tinycache 设计与实现
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. tinycache 设计与实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 借鉴与改进
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 整体架构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 核心数据结构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 数据模型的差异
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 主要方法
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.5 主要方法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#451-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5.1 Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#452-get" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5.2 Get
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#453-delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5.3 delete
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 其他方法
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.6 其他方法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#461" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6.1 指针安全检查
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#462-hash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6.2 hash函数
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#463" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6.3 哈希冲突
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 总结
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 前言
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-go-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Go map 在大数据量缓存场景下的痛点
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Go map 在大数据量缓存场景下的痛点">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-map-rwmutex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 map + RWMutex
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-gc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 GC 扫描风暴
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 其他问题
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-bigcache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. bigcache 的核心设计
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. bigcache 的核心设计">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 架构概览
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 局限
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-tinycache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. tinycache 设计与实现
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. tinycache 设计与实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 借鉴与改进
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 整体架构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 核心数据结构
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 数据模型的差异
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 主要方法
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.5 主要方法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#451-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5.1 Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#452-get" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5.2 Get
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#453-delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5.3 delete
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 其他方法
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.6 其他方法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#461" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6.1 指针安全检查
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#462-hash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6.2 hash函数
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#463" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6.3 哈希冲突
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 总结
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<p><span style="color:gray; font-size:0.9em;">📄 本文共 2156 字，预计阅读 5 分钟</span></p>
+<h1 id="01-go">01. 设计和实现高性能 Go 本地缓存</h1>
+<h2 id="1">1. 前言</h2>
+<blockquote>
+<p>本着干中学的理念，在梳理完 go map 的相关知识后，针对其存在的痛点，并根据某些应用场景中可以优化的点来设计和实现一个高性能的 cache 库——<a href="https://github.com/liwh1227/tinycache">tinycache</a>。</p>
+</blockquote>
+<p><code>tinycache</code> 是一个专为 Go 语言设计的高性能、泛型、线程安全的内存缓存库。它旨在解决在高并发和海量数据场景下，Go 原生 <code>map</code> 带来的垃圾回收（GC）延迟过高和锁竞争问题。本文将从 Go map 在大数据量缓存场景下的 GC 痛点出发，参考了业界主流开源库<code>BigCache</code>如何解决这个问题，并在此基础上设计一个自己的缓存库。</p>
+<p><code>tinycache</code>  借鉴了 <code>bigcache</code> 的"指针擦除"核心思想，同时在数据模型和内存管理上做了根本性改进——用<strong>泛型 struct 数组</strong>替代<strong>序列化字节队列</strong>，用 <strong>FreeList 即时回收</strong>替代 <strong>FIFO 自然淘汰</strong>。</p>
+<h2 id="2-go-map">2. Go map 在大数据量缓存场景下的痛点</h2>
+<h3 id="21-map-rwmutex">2.1 map + RWMutex</h3>
+<p>常见的缓存实现中，一般都采用<code>map + rwmutex</code>的机制实现，假设当前是一个存储用户画像的缓存结构，常见的实现代码如下所示。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">NaiveCache</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="nx">mu</span><span class="w">   </span><span class="nx">sync</span><span class="p">.</span><span class="nx">RWMutex</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nx">data</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="nx">UserProfile</span><span class="w"> </span><span class="c1">// 存储用户画像</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">}</span>
+</code></pre></div>
+<p>当数据量在几千、几万级别时，这种方案工作得很好。但当缓存条目达到<strong>百万甚至千万级别</strong>时，问题开始浮现。</p>
+<h3 id="22-gc">2.2 GC 扫描风暴</h3>
+<p>Go 的垃圾回收器采用三色标记法，在标记阶段需要遍历堆上所有可达对象。对于 map 而言，GC 的行为取决于 key/value 的类型：</p>
+<ul>
+<li><strong>包含指针的 map</strong>（如上述 demo 代码<code>map[string]*UserProfile</code>）：GC 必须扫描每一个 key 和 value，因为 string 底层包含指针（<code>StringHeader.Data</code>），<code>*UserProfile</code> 本身就是指针。1000 万条目意味着至少 2000 万个指针需要扫描。</li>
+<li><strong>不包含指针的 map</strong>（如 <code>map[uint64]uint32</code>）：Go 1.5 引入的优化（<a href="https://github.com/golang/go/issues/9477">issue-9477</a>）使得 GC 可以直接跳过这类 map 的内容，标记时间从 O(N) 降为 O(1)。</li>
+</ul>
+<p>这里需要澄清一个常见误解：在现代 Go（1.12+）中，GC 的 STW（Stop-The-World）暂停时间本身已经极短（通常 &lt;100µs），<strong>与堆中指针数量几乎无关</strong>。指针数量真正影响的是 <strong>GC 并发标记阶段的 CPU 消耗</strong>——Go 通过 mark assist 机制，在 goroutine 分配内存时强制其参与标记工作。指针越多，mark assist 越频繁，应用的有效吞吐量就越低。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>STW Pause 1 (Mark Setup)       ← 极短，&lt; 50µs，与堆大小几乎无关
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>     │
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>     ▼
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Concurrent Mark (并发标记)       ← 真正的重活：遍历所有指针
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>     │                             与应用 goroutine 并发执行
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>     │                             通过 mark assist 抢占应用 CPU
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>     ▼
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>STW Pause 2 (Mark Termination)  ← 极短
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>     │
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>     ▼
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>Concurrent Sweep                ← 并发清扫
+</code></pre></div>
+<p>因此，衡量 GC 优化效果的正确指标不是 STW Pause，而是：</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>含义</th>
+<th>为什么重要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>HeapObjects</strong></td>
+<td>GC 追踪的堆对象数量</td>
+<td>直接反映 GC 需要扫描的对象数</td>
+</tr>
+<tr>
+<td><strong>GCCPUFraction</strong></td>
+<td>GC 占总 CPU 的比例</td>
+<td>指针越多 → 并发标记越重 → CPU 占比越高</td>
+</tr>
+<tr>
+<td><strong>Throughput Under GC</strong></td>
+<td>GC 压力下的吞吐量</td>
+<td>最贴近生产环境的综合指标</td>
+</tr>
+</tbody>
+</table>
+<p>上述指标也是我们后文进行性能测试的重要对比指标。</p>
+<h3 id="23">2.3 其他问题</h3>
+<ul>
+<li><strong>并发锁竞争</strong>：单一的 <code>sync.RWMutex</code> 在高并发场景下会成为瓶颈。即使读锁（RLock）允许并发读取，在写操作频繁时，所有读操作仍会被短暂阻塞。当 QPS 达到数万甚至数十万时，锁争用会显著降低吞吐量。</li>
+<li><strong>内存只增不减</strong>：正如<a href="../../go/15.%20map/">15. map</a> 中分析，map 只扩不缩。在缓存场景中，流量高峰期 map 扩容后，低峰期即使大量条目被淘汰，底层 bucket 数组的内存也不会释放。</li>
+</ul>
+<p>我们需要针对当前 Go map 在某些场景下面临的问题，一一进行解决，本方案的设计理念主要参考了<code>bigcache</code>的实现并针对性增加了一些改动。</p>
+<h2 id="3-bigcache">3. bigcache 的核心设计</h2>
+<h3 id="31">3.1 架构概览</h3>
+<p><a href="https://github.com/allegro/bigcache">BigCache</a> 由 Allegro 团队开源，是解决"大规模缓存 GC 问题"的标杆项目。它的设计围绕一个核心目标：让 GC 看不到你的数据。<code>bigcache</code>的架构示意图如图 1 所示：</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84-01Go%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98-bigcache%E6%9E%B6%E6%9E%84.png" data-desc-position="bottom"><img alt="" src="../../../assets/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84-01Go%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98-bigcache%E6%9E%B6%E6%9E%84.png"></a>
+<em>图1： bigcache 架构图</em></p>
+<p><code>bigcache</code>的设计理念如下：</p>
+<ol>
+<li><strong>索引</strong> — key 是哈希值，value 是 BytesQueue 中的偏移量。两者都是基本整数类型，无指针，GC 直接跳过。</li>
+<li><strong>分片降低锁粒度</strong> — 默认 1024 个 shard，每个 shard 独立 <code>sync.RWMutex</code>，将锁争用概率降到 1/1024。</li>
+<li><strong>数据序列化为</strong> — 所有 key/value 序列化后追加到一个连续的 <code>[]byte</code> 数组（BytesQueue）。GC 只看到一个 slice 指针，而非 N 个独立对象。</li>
+</ol>
+<h3 id="32">3.2 局限</h3>
+<p>BigCache 面向的是"通用 KV 字节缓存"场景，<code>[]byte</code> 接口和 FIFO 淘汰在这个场景下是合理的设计选择。但如果我们面对的是"<strong>已知类型的结构体缓存</strong>"场景（缓存用户画像、行情快照、会话状态），它有几个值得改进的地方：</p>
+<ul>
+<li><strong>序列化开销</strong>：所有数据必须编解码为 <code>[]byte</code>。在高 QPS 下，每次 Get/Set 的 <code>json.Marshal</code> / <code>binary.Write</code> 会产生大量临时堆分配，反而给 GC 带来额外压力——与优化的初衷矛盾。</li>
+<li><strong>FIFO 无法原地更新</strong>：BytesQueue 是追加写的 FIFO 队列。更新同一个 key 时，旧 entry 原地作废，新 entry 追加到队尾。频繁更新同一批 key 会导致大量"死" entry 堆积。</li>
+<li><strong>无法显式回收</strong>：Delete 只是从 index 中移除映射，BytesQueue 中的数据空间无法回收，只能等 FIFO 自然覆盖。</li>
+<li><strong>类型不安全</strong>：接口是 <code>Get(key) → []byte</code>，用户需要自行处理序列化/反序列化，编译期无法发现类型错误。</li>
+</ul>
+<h2 id="4-tinycache">4. tinycache 设计与实现</h2>
+<h3 id="41">4.1 借鉴与改进</h3>
+<p><code>tinycache</code> 从 <code>bigcache</code> 中借鉴了经过生产验证的核心思想，同时在数据模型和内存管理上走了一条不同的路。两者的关系可以用这张表概括：</p>
+<table>
+<thead>
+<tr>
+<th>设计维度</th>
+<th>借鉴 BigCache</th>
+<th>TinyCache 的改进</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>map[uint64]uint32</code> 无指针索引</td>
+<td>✅</td>
+<td>—</td>
+</tr>
+<tr>
+<td>分片 + 独立 RWMutex</td>
+<td>✅</td>
+<td>—</td>
+</tr>
+<tr>
+<td>FNV-1a 哈希</td>
+<td>✅</td>
+<td>改为零分配内联版本</td>
+</tr>
+<tr>
+<td>哈希冲突覆盖策略</td>
+<td>✅</td>
+<td>—</td>
+</tr>
+<tr>
+<td>数据存储</td>
+<td>—</td>
+<td><code>[]slot[T]</code> 随机访问数组，替代 <code>[]byte</code> FIFO 队列</td>
+</tr>
+<tr>
+<td>内存回收</td>
+<td>—</td>
+<td>FreeList 即时回收，替代 FIFO 自然淘汰</td>
+</tr>
+<tr>
+<td>类型安全</td>
+<td>—</td>
+<td>泛型 <code>T</code> + reflect 运行时指针校验</td>
+</tr>
+<tr>
+<td>过期清理</td>
+<td>—</td>
+<td>读路径惰性判定（不加写锁）+ 后台批量回收</td>
+</tr>
+</tbody>
+</table>
+<p><code>bigcache</code> 是面向字节流的 FIFO 缓冲区，<code>tinycache</code> 是面向结构体的随机访问内存池。</p>
+<h3 id="42">4.2 整体架构</h3>
+<p><code>tinycache</code>的整体架构如图 2 所示。
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84-01Go%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98-tinycache%E6%9E%B6%E6%9E%84.png" data-desc-position="bottom"><img alt="" src="../../../assets/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84-01Go%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98-tinycache%E6%9E%B6%E6%9E%84.png"></a>
+<em>图2：tinycache 架构</em></p>
+<h3 id="43">4.3 核心数据结构</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// slot 是 data 切片中的存储单元</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1">// 只要 T 不含指针，整个 []slot[T] 对 GC 而言是 no-scan 的</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kd">type</span><span class="w"> </span><span class="nx">slot</span><span class="p">[</span><span class="nx">T</span><span class="w"> </span><span class="kt">any</span><span class="p">]</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nx">keyHash</span><span class="w">  </span><span class="kt">uint64</span><span class="w">  </span><span class="c1">// 完整 64 位哈希，用于 Get 时冲突校验</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nx">expireAt</span><span class="w"> </span><span class="kt">int64</span><span class="w">   </span><span class="c1">// 过期时间 (UnixNano)，0 表示永不过期</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nx">data</span><span class="w">     </span><span class="nx">T</span><span class="w">       </span><span class="c1">// 用户业务数据（纯值类型 struct）</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">}</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1">// shard 是真正的缓存执行单元</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="kd">type</span><span class="w"> </span><span class="nx">shard</span><span class="p">[</span><span class="nx">T</span><span class="w"> </span><span class="kt">any</span><span class="p">]</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="nx">mu</span><span class="w">       </span><span class="nx">sync</span><span class="p">.</span><span class="nx">RWMutex</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="nx">index</span><span class="w">    </span><span class="kd">map</span><span class="p">[</span><span class="kt">uint64</span><span class="p">]</span><span class="kt">uint32</span><span class="w">  </span><span class="c1">// hash → slot 下标（纯整数GC 跳过）</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">    </span><span class="nx">data</span><span class="w">     </span><span class="p">[]</span><span class="nx">slot</span><span class="p">[</span><span class="nx">T</span><span class="p">]</span><span class="w">          </span><span class="c1">// 连续内存数据仓库（无指针GC 跳过）</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">    </span><span class="nx">freeList</span><span class="w"> </span><span class="p">[]</span><span class="kt">uint32</span><span class="w">           </span><span class="c1">// 空闲槽位栈 LIFO（纯整数GC 跳过）</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="p">}</span>
+</code></pre></div>
+<p>在<code>shard</code>结构中，三个字段各司其职：</p>
+<ul>
+<li><code>index</code> 是 <code>map[uint64]uint32</code>——key 和 value 都是整数类型，，GC 直接跳过。这一点<strong>与 BigCache 完全一致</strong>。</li>
+<li><code>data</code> 是 <code>[]slot[T]</code>——<strong>不同于 BigCache 的</strong> <code>[]byte</code>，tinycache 直接存储原生 struct。只要 T 是纯值类型（通过运行时校验保证），整个 slice 对 GC 而言就是一块不含指针的连续内存。</li>
+<li><code>freeList</code> 是 <code>[]uint32</code>——一个简单的整数栈，记录被删除/过期的槽位下标。下次 Set 时从栈顶弹出复用。<strong>这是 BigCache 所不具备的机制</strong>。</li>
+</ul>
+<h3 id="44">4.4 数据模型的差异</h3>
+<p>BigCache 的数据层是一个 FIFO 字节队列，只能从尾部追加，无法原地更新：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>BigCache BytesQueue (只能追加):
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>┌──────┬──────┬──────┬──────┬────┐
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>│entry0│entry1│entry2│entry3│tail│  → 写入只能 append
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>└──────┴──────┴──────┴──────┴────┘
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>每个 entry 变长: [timestamp|hash|keyLen|key|value]
+</code></pre></div>
+<p>TinyCache 的数据层是一个 <strong>随机访问 struct 数组</strong>，通过下标直接定位和原地覆盖：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>TinyCache []slot[T] (随机访问):
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>┌───────┬───────┬───────┬───────┐
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>│slot[0]│slot[1]│slot[2]│slot[3]│  → 通过下标 O(1) 原地读写
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>└───────┴───────┴───────┴───────┘
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>每个 slot 定长: {keyHash uint64, expireAt int64, data T}
+</code></pre></div>
+<p>这个差异导致了一系列连锁反应：</p>
+<table>
+<thead>
+<tr>
+<th>行为</th>
+<th>BigCache</th>
+<th>TinyCache</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>更新已有 key</td>
+<td>旧 entry 作废 → 队尾追加新 entry（旧空间浪费）</td>
+<td><code>data[idx] = newSlot</code>，<strong>原地覆盖，零浪费</strong></td>
+</tr>
+<tr>
+<td>删除</td>
+<td>无法物理回收，等 FIFO 自然淘汰</td>
+<td>从 index 移除 + 下标归还 FreeList，<strong>立即可复用</strong></td>
+</tr>
+<tr>
+<td>空间复用</td>
+<td>不复用，依赖 FIFO 覆盖</td>
+<td><strong>FreeList 显式管理</strong>，删除后槽位立即可用</td>
+</tr>
+<tr>
+<td>序列化</td>
+<td>必须 encode/decode 为<code>[]byte</code></td>
+<td><strong>零序列化</strong>，直接操作 struct</td>
+</tr>
+<tr>
+<td>类型安全</td>
+<td><code>[]byte</code>，运行时发现错误</td>
+<td>泛型 <code>T</code>，<strong>编译期类型检查</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="45">4.5 主要方法</h3>
+<p>同其他 cache 一样，TinyCache 提供了Set、Get、Del 等操作。</p>
+<h4 id="451-set">4.5.1 Set</h4>
+<p><code>Set</code> 写入操作为了最大化降低内存分配并避免切片无节制扩容，TinyCache 在锁定单个 <code>Shard</code> 后，采用了严格的<strong>三级降级优先策略</strong>：</p>
+<ul>
+<li>
+<p><strong>路径 1：原地覆盖更新</strong></p>
+<ul>
+<li><strong>触发条件</strong>：哈希键 <code>index[h]</code> 已存在（通常是更新已有 Key，或者是极低概率的哈希冲突）。</li>
+<li><strong>执行逻辑</strong>：直接通过存在的 <code>idx</code> 覆盖底层 <code>data[idx]</code> 的数据。</li>
+<li><strong>性能影响</strong>：最佳状态。时间复杂度严格 <span class="arithmatex">\(O(1)\)</span>，仅发生一次内存值的拷贝替换，<strong>零堆分配（0 Alloc）</strong>，不会引起底层数据结构的任何形变。</li>
+</ul>
+</li>
+<li>
+<p><strong>路径 2：槽位复用</strong></p>
+<ul>
+<li><strong>触发条件</strong>：当前是新 Key 写入，且 <code>freeList</code>（回收栈）中存在之前因 <code>Delete</code> 或 <code>CleanExpired</code> 废弃的槽位。</li>
+<li><strong>执行逻辑</strong>：从 <code>freeList</code> 的尾部弹出（Pop）一个废弃槽位的索引 <code>idx</code>（LIFO 后进先出策略可以提升 CPU 缓存的局部性命中率），将新数据写入该位置，并更新哈希索引。</li>
+<li><strong>性能影响</strong>：次佳状态。时间复杂度 <span class="arithmatex">\(O(1)\)</span>，<strong>零堆分配（0 Alloc）</strong>。有效抑制了底层数组的无限增长，实现了缓存空间的自我循环。</li>
+</ul>
+</li>
+<li>
+<p><strong>路径 3：追加扩容</strong></p>
+<ul>
+<li><strong>触发条件</strong>：当前是新 Key 写入，且 <code>freeList</code> 已耗尽（通常发生在缓存实例刚启动的“预热填充期”）。</li>
+<li><strong>执行逻辑</strong>：调用 Go 原生的 <code>append</code> 函数，将新 <code>slot</code> 追加到 <code>data</code> 切片末尾，并记录新的索引下标。</li>
+<li><strong>性能影响</strong>：兜底路径。平摊时间复杂度为 <span class="arithmatex">\(O(1)\)</span>。当切片容量（<code>cap</code>）不足时，会触发 Go Runtime 的底层数组扩容机制（通常为 <span class="arithmatex">\(1.25\)</span> 或 <span class="arithmatex">\(2\)</span> 倍增长），此时会产生<strong>内存分配与数据拷贝开销</strong>。</li>
+</ul>
+</li>
+</ul>
+<p>图3展示了 TinyCache 进行 <code>Set</code> 操作的流程。</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84-01Go%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98-set%E6%B5%81%E7%A8%8B.png" data-desc-position="bottom"><img alt="" src="../../../assets/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84-01Go%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98-set%E6%B5%81%E7%A8%8B.png"></a>
+<em>图3: tinycache set操作流程</em></p>
+<p>对应的实现代码如下：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="o">*</span><span class="nx">shard</span><span class="p">[</span><span class="nx">T</span><span class="p">])</span><span class="w"> </span><span class="nx">set</span><span class="p">(</span><span class="nx">keyHash</span><span class="w"> </span><span class="kt">uint64</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="w"> </span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">ttl</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">expireAt</span><span class="w"> </span><span class="kt">int64</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">ttl</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">        </span><span class="nx">expireAt</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">().</span><span class="nx">Add</span><span class="p">(</span><span class="nx">ttl</span><span class="p">).</span><span class="nx">UnixNano</span><span class="p">()</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="nx">entry</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">slot</span><span class="p">[</span><span class="nx">T</span><span class="p">]{</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">        </span><span class="nx">keyHash</span><span class="p">:</span><span class="w">  </span><span class="nx">keyHash</span><span class="p">,</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">        </span><span class="nx">expireAt</span><span class="p">:</span><span class="w"> </span><span class="nx">expireAt</span><span class="p">,</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">        </span><span class="nx">data</span><span class="p">:</span><span class="w">     </span><span class="nx">value</span><span class="p">,</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span><span class="nx">s</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="nx">s</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">    </span><span class="c1">// 路径 1：key 已存在（更新）或哈希冲突（覆盖）</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">idx</span><span class="p">,</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">s</span><span class="p">.</span><span class="nx">index</span><span class="p">[</span><span class="nx">keyHash</span><span class="p">];</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">        </span><span class="nx">s</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">idx</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">entry</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">        </span><span class="k">return</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">    </span><span class="c1">// 路径 2：从 freeList 复用空闲槽位</span>
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">n</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">freeList</span><span class="p">);</span><span class="w"> </span><span class="nx">n</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="w">        </span><span class="nx">freeIdx</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">s</span><span class="p">.</span><span class="nx">freeList</span><span class="p">[</span><span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w">     </span><span class="c1">// LIFO: 弹出栈顶</span>
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="w">        </span><span class="nx">s</span><span class="p">.</span><span class="nx">freeList</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">s</span><span class="p">.</span><span class="nx">freeList</span><span class="p">[:</span><span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="w">        </span><span class="nx">s</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">freeIdx</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">entry</span>
+<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="w">        </span><span class="nx">s</span><span class="p">.</span><span class="nx">index</span><span class="p">[</span><span class="nx">keyHash</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">freeIdx</span>
+<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a><span class="w">        </span><span class="k">return</span>
+<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a>
+<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="w">    </span><span class="c1">// 路径 3：追加到 data 尾部</span>
+<a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a><span class="w">    </span><span class="nx">idx</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">uint32</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">data</span><span class="p">))</span>
+<a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a><span class="w">    </span><span class="nx">s</span><span class="p">.</span><span class="nx">data</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span><span class="w"> </span><span class="nx">entry</span><span class="p">)</span>
+<a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a><span class="w">    </span><span class="nx">s</span><span class="p">.</span><span class="nx">index</span><span class="p">[</span><span class="nx">keyHash</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">idx</span>
+<a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a><span class="p">}</span>
+</code></pre></div>
+<p>路径 1 和路径 2 都是零分配的——不触发 slice 扩容，不产生临时对象。在缓存稳定运行一段时间后（经历过一轮增删），大部分 Set 操作会命中路径 1 或路径 2，路径 3 只在初始填充阶段频繁触发。</p>
+<h4 id="452-get">4.5.2 Get</h4>
+<p><code>Get</code> 读取操作在缓存系统中通常占据 90% 以上的流量。为了在保证数据绝对安全的前提下实现高吞吐量，TinyCache 的 <code>Get</code> 操作在仅持有<strong>读锁（<code>RLock</code>）</strong> 的状态下进行读取操作。其核心执行流采用了串行的防御机制，依次包含索引命中校验与惰性过期判定。</p>
+<ul>
+<li>
+<p><strong>索引命中</strong></p>
+<ul>
+<li>直接查询 <code>map[uint64]uint32</code> 。由于 Map 的 Key 和 Value 都是基础数字类型，此操作避开了 GC 扫描 ，若未命中，直接释放读锁并返回 <code>ErrNotFound</code>。</li>
+</ul>
+</li>
+<li>
+<p><strong>惰性过期判定</strong></p>
+<ul>
+<li>检查条目的 <code>expireAt</code> 时间戳 。当发现数据已过期时 TinyCache 绝对不会在此处尝试删除数据（删除操作将锁升级为互斥写锁）。相反，它仅仅静默返回 <code>ErrNotFound</code>，将物理清理工作完全下放给后期的覆盖写入或后台的定时清理协程。</li>
+</ul>
+</li>
+</ul>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84-01Go%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98-Get%E6%B5%81%E7%A8%8B.png" data-desc-position="bottom"><img alt="" src="../../../assets/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84-01Go%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98-Get%E6%B5%81%E7%A8%8B.png"></a>
+<em>图4: tinycache get操作流程</em></p>
+<p>对应实现的代码如下：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="o">*</span><span class="nx">shard</span><span class="p">[</span><span class="nx">T</span><span class="p">])</span><span class="w"> </span><span class="nx">get</span><span class="p">(</span><span class="nx">keyHash</span><span class="w"> </span><span class="kt">uint64</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="nx">s</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">RLock</span><span class="p">()</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="nx">s</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">RUnlock</span><span class="p">()</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="nx">idx</span><span class="p">,</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">s</span><span class="p">.</span><span class="nx">index</span><span class="p">[</span><span class="nx">keyHash</span><span class="p">]</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">!</span><span class="nx">ok</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">zero</span><span class="w"> </span><span class="nx">T</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">zero</span><span class="p">,</span><span class="w"> </span><span class="nx">ErrNotFound</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">    </span><span class="nx">entry</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">s</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">idx</span><span class="p">]</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">    </span><span class="c1">// 哈希冲突校验，后续版本优化</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">    </span><span class="cm">/*if entry.keyHash != keyHash {</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="cm">        var zero T</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="cm">        return zero, ErrNotFound</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="cm">    }*/</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="w">    </span><span class="c1">// 过期检查（惰性判定，不在读路径加写锁清理）</span>
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">entry</span><span class="p">.</span><span class="nx">expireAt</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">().</span><span class="nx">UnixNano</span><span class="p">()</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="nx">entry</span><span class="p">.</span><span class="nx">expireAt</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">zero</span><span class="w"> </span><span class="nx">T</span>
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">zero</span><span class="p">,</span><span class="w"> </span><span class="nx">ErrNotFound</span>
+<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>
+<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">entry</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span>
+<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>读路径不加写锁</strong> — 过期条目被发现后只返回 NotFound，不做删除/清理。这避免了在高 QPS 读路径上升级为写锁导致的性能退化。过期条目由 <code>CleanExpired()</code> 后台协程统一回收。
+<strong>值拷贝</strong> — <code>return entry.data</code> 在 Go 的值语义下是 struct 拷贝。调用方拿到的是独立副本，读锁释放后即使槽位被覆盖也不影响已返回的数据。</p>
+<h4 id="453-delete">4.5.3 delete</h4>
+<p>TinyCache 与 BigCache 在删除（Delete）操作上的内存回收策略存在显著的架构差异。</p>
+<p>BigCache 的删除操作仅执行索引层面的逻辑解绑，其 BytesQueue 中的物理数据空间无法被主动回收，必须依赖 FIFO 淘汰机制在后续追加写入时自然覆盖。相反，TinyCache 通过 FreeList 结构实现了确定性的空间即时回收与复用。</p>
+<p>具体而言，TinyCache 的 Delete 操作不会触发底层 <code>data</code> 切片的缩容操作（避免了物理内存释放与再分配的开销），而是将目标数据的存储槽位（Slot）清零后，将其对应的数组下标压入 FreeList 栈中。在后续的 Set 写入操作中，系统会优先从 FreeList 栈顶弹出可用下标，实现对底层空闲槽位的原地覆写。删除操作流程如图5所示。</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84-01-tinycache%E5%88%A0%E9%99%A4%E6%B5%81%E7%A8%8B.png" data-desc-position="bottom"><img alt="" src="../../../assets/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84-01-tinycache%E5%88%A0%E9%99%A4%E6%B5%81%E7%A8%8B.png"></a>
+<em>图5: tinycache del操作流程</em></p>
+<p>对应的代码实现逻辑如下：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="o">*</span><span class="nx">shard</span><span class="p">[</span><span class="nx">T</span><span class="p">])</span><span class="w"> </span><span class="nx">del</span><span class="p">(</span><span class="nx">keyHash</span><span class="w"> </span><span class="kt">uint64</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="nx">s</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="nx">s</span><span class="p">.</span><span class="nx">mu</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="nx">idx</span><span class="p">,</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">s</span><span class="p">.</span><span class="nx">index</span><span class="p">[</span><span class="nx">keyHash</span><span class="p">]</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">!</span><span class="nx">ok</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">        </span><span class="k">return</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">    </span><span class="nb">delete</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">index</span><span class="p">,</span><span class="w"> </span><span class="nx">keyHash</span><span class="p">)</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">zeroSlot</span><span class="w"> </span><span class="nx">slot</span><span class="p">[</span><span class="nx">T</span><span class="p">]</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="w">    </span><span class="nx">s</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">idx</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">zeroSlot</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="w">    </span><span class="nx">s</span><span class="p">.</span><span class="nx">freeList</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">s</span><span class="p">.</span><span class="nx">freeList</span><span class="p">,</span><span class="w"> </span><span class="nx">idx</span><span class="p">)</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="46">4.6 其他方法</h3>
+<p>除了常用的Set、Get、Del操作外，为了实现 TinyCache 的在高性能方面的优化，还实现了其他的辅助类方法。</p>
+<h4 id="461">4.6.1 指针安全检查</h4>
+<p>TinyCache 的 GC 优化建立在一个刚性前提上：<code>[]slot[T]</code> 不包含任何指针。一旦 T 中出现 string、slice、map、pointer 等类型，整个优化就失效了。</p>
+<p>由于 Go 的泛型系统目前无法在<strong>编译期</strong>约束"T 不含指针字段"，TinyCache 在 <code>New[T]()</code> 时通过 reflect 进行运行时校验：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">assertNoPointers</span><span class="p">[</span><span class="nx">T</span><span class="w"> </span><span class="kt">any</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="nx">t</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">reflect</span><span class="p">.</span><span class="nx">TypeOf</span><span class="p">((</span><span class="o">*</span><span class="nx">T</span><span class="p">)(</span><span class="kc">nil</span><span class="p">)).</span><span class="nx">Elem</span><span class="p">()</span><span class="w">  </span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">findPointerField</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="s">""</span><span class="p">);</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">       </span><span class="nb">panic</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="w">  </span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">          </span><span class="s">"tinycache: type %q contains pointer at %s — "</span><span class="o">+</span><span class="w">  </span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">             </span><span class="s">"this breaks the GC optimization. "</span><span class="o">+</span><span class="w">  </span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">             </span><span class="s">"All fields must be value types (int, float, bool, fixed-size arrays, etc.)"</span><span class="p">,</span><span class="w">  </span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">          </span><span class="nx">t</span><span class="p">.</span><span class="nx">String</span><span class="p">(),</span><span class="w"> </span><span class="nx">path</span><span class="p">,</span><span class="w">  </span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">       </span><span class="p">))</span><span class="w">  </span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">    </span><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="p">}</span>
+</code></pre></div>
+<p><code>findPointerField</code> 会递归遍历 T 的每一个字段，发现指针类型时 panic 并报出<strong>具体的字段路径</strong>：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kd">func</span><span class="w"> </span><span class="nx">findPointerField</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Type</span><span class="p">,</span><span class="w"> </span><span class="nx">prefix</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Kind</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="c1">// 显式指针类型  </span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Ptr</span><span class="p">,</span><span class="w"> </span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Map</span><span class="p">,</span><span class="w"> </span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Slice</span><span class="p">,</span><span class="w">  </span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">       </span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Chan</span><span class="p">,</span><span class="w"> </span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Func</span><span class="p">,</span><span class="w"> </span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Interface</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">       </span><span class="nx">reflect</span><span class="p">.</span><span class="nx">UnsafePointer</span><span class="p">:</span><span class="w">  </span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">       </span><span class="k">if</span><span class="w"> </span><span class="nx">prefix</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">String</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" (root type is a pointer type)"</span><span class="w">  </span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">       </span><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">       </span><span class="k">return</span><span class="w"> </span><span class="nx">prefix</span><span class="w">  </span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">    </span><span class="c1">// string 底层含指针（StringHeader.Data）  </span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nx">reflect</span><span class="p">.</span><span class="nx">String</span><span class="p">:</span><span class="w">  </span>
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="w">       </span><span class="k">if</span><span class="w"> </span><span class="nx">prefix</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="s">"string (root type contains pointer)"</span><span class="w">  </span>
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="w">       </span><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="w">       </span><span class="k">return</span><span class="w"> </span><span class="nx">prefix</span><span class="w">  </span>
+<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>
+<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="w">    </span><span class="c1">// struct 需要递归检查每个字段  </span>
+<a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Struct</span><span class="p">:</span><span class="w">  </span>
+<a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a><span class="w">       </span><span class="k">for</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">NumField</span><span class="p">();</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a><span class="w">          </span><span class="nx">field</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Field</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span><span class="w">  </span>
+<a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a><span class="w">          </span><span class="nx">fieldPath</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">field</span><span class="p">.</span><span class="nx">Name</span><span class="w">  </span>
+<a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a><span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="nx">prefix</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a><span class="w">             </span><span class="nx">fieldPath</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">prefix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"."</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">field</span><span class="p">.</span><span class="nx">Name</span><span class="w">  </span>
+<a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a><span class="w">          </span><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a><span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">findPointerField</span><span class="p">(</span><span class="nx">field</span><span class="p">.</span><span class="nx">Type</span><span class="p">,</span><span class="w"> </span><span class="nx">fieldPath</span><span class="p">);</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a><span class="w">             </span><span class="k">return</span><span class="w"> </span><span class="nx">result</span><span class="w">  </span>
+<a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a><span class="w">          </span><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a><span class="w">       </span><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-9-32" name="__codelineno-9-32" href="#__codelineno-9-32"></a><span class="w">       </span><span class="k">return</span><span class="w"> </span><span class="s">""</span><span class="w">  </span>
+<a id="__codelineno-9-33" name="__codelineno-9-33" href="#__codelineno-9-33"></a>
+<a id="__codelineno-9-34" name="__codelineno-9-34" href="#__codelineno-9-34"></a><span class="w">    </span><span class="c1">// 固定长度数组需要检查元素类型  </span>
+<a id="__codelineno-9-35" name="__codelineno-9-35" href="#__codelineno-9-35"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Array</span><span class="p">:</span><span class="w">  </span>
+<a id="__codelineno-9-36" name="__codelineno-9-36" href="#__codelineno-9-36"></a><span class="w">       </span><span class="nx">elemPath</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">prefix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"[]"</span><span class="w">  </span>
+<a id="__codelineno-9-37" name="__codelineno-9-37" href="#__codelineno-9-37"></a><span class="w">       </span><span class="k">if</span><span class="w"> </span><span class="nx">prefix</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-9-38" name="__codelineno-9-38" href="#__codelineno-9-38"></a><span class="w">          </span><span class="nx">elemPath</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"[]"</span><span class="w">  </span>
+<a id="__codelineno-9-39" name="__codelineno-9-39" href="#__codelineno-9-39"></a><span class="w">       </span><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-9-40" name="__codelineno-9-40" href="#__codelineno-9-40"></a><span class="w">       </span><span class="k">return</span><span class="w"> </span><span class="nx">findPointerField</span><span class="p">(</span><span class="nx">t</span><span class="p">.</span><span class="nx">Elem</span><span class="p">(),</span><span class="w"> </span><span class="nx">elemPath</span><span class="p">)</span><span class="w">  </span>
+<a id="__codelineno-9-41" name="__codelineno-9-41" href="#__codelineno-9-41"></a>
+<a id="__codelineno-9-42" name="__codelineno-9-42" href="#__codelineno-9-42"></a><span class="w">    </span><span class="k">default</span><span class="p">:</span><span class="w">  </span>
+<a id="__codelineno-9-43" name="__codelineno-9-43" href="#__codelineno-9-43"></a><span class="w">       </span><span class="c1">// bool, int*, uint*, float*, complex* 等基本值类型  </span>
+<a id="__codelineno-9-44" name="__codelineno-9-44" href="#__codelineno-9-44"></a><span class="w">       </span><span class="k">return</span><span class="w"> </span><span class="s">""</span><span class="w">  </span>
+<a id="__codelineno-9-45" name="__codelineno-9-45" href="#__codelineno-9-45"></a><span class="w">    </span><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-9-46" name="__codelineno-9-46" href="#__codelineno-9-46"></a><span class="p">}</span>
+</code></pre></div>
+<p>拒绝的类型：<code>*T</code>、<code>map</code>、<code>slice</code>、<code>chan</code>、<code>func</code>、<code>interface</code>、<code>string</code>、unsafe.Pointer。接受的类型：<code>int/uint/float/complex/bool</code> 系列、固定长度数组（元素也必须无指针）、struct（所有字段都无指针）。</p>
+<h4 id="462-hash">4.6.2 hash函数</h4>
+<p>参照 BigCache 使用的 FNV-1a 哈希算法，但是其通过调用标准库 <code>hash/fnv</code>实现：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1">// BigCache 的哈希方式（每次调用有堆分配）</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nx">h</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">fnv</span><span class="p">.</span><span class="nx">New64a</span><span class="p">()</span><span class="w">          </span><span class="c1">// 分配 hash.Hash64 接口对象，逃逸到堆</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nx">h</span><span class="p">.</span><span class="nx">Write</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span><span class="w">       </span><span class="c1">// string → []byte 转换，又一次堆分配</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="k">return</span><span class="w"> </span><span class="nx">h</span><span class="p">.</span><span class="nx">Sum64</span><span class="p">()</span>
+</code></pre></div>
+<p>TinyCache 使用手写的零分配内联版本，直接参考的<code>hash/fnv</code>中的<code>New64a()</code>及其<code>Write</code>方法的实现：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1">// TinyCache 的哈希方式（零堆分配）</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="kd">func</span><span class="w"> </span><span class="nx">fnvHash</span><span class="p">(</span><span class="nx">key</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="kt">uint64</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="nx">h</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">uint64</span><span class="p">(</span><span class="mi">14695981039346656037</span><span class="p">)</span><span class="w"> </span><span class="c1">// FNV offset basis</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">        </span><span class="nx">h</span><span class="w"> </span><span class="p">^=</span><span class="w"> </span><span class="nb">uint64</span><span class="p">(</span><span class="nx">key</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">        </span><span class="nx">h</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="mi">1099511628211</span><span class="w">            </span><span class="c1">// FNV prime</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">h</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="p">}</span>
+</code></pre></div>
+<p>直接遍历 string 底层字节，避免了 <code>[]byte</code> 转换和接口对象分配。理论上，在 10 万 QPS 下，BigCache 的哈希方式每秒会产生约 20 万次堆分配；TinyCache 版本为零。</p>
+<h4 id="463">4.6.3 哈希冲突</h4>
+<p>与 BigCache 一致，TinyCache 采用<strong>覆盖策略</strong>——如果两个不同的 key 产生相同的哈希值，后写入的会覆盖先写入的。由于 TinyCache 不存储原始 key（string 含指针，无法存入 no-scan 的 slot），冲突检测能力弱于 BigCache（BigCache 在 BytesQueue 中存储了完整的 key bytes，可以做精确的字符串比对）。使用 64 位哈希函数时，根据生日悖论，<strong>当缓存中同时存活的 key 数量达到</strong> <span class="arithmatex">\(2^{32}\)</span>（约 43 亿）<strong>时，发生至少一次哈希碰撞的概率约为 50%</strong>。对于百万到千万级缓存场景，这一概率微乎其微，基本可以忽略。</p>
+<blockquote>
+<p>在后续的架构演进中，可考虑引入双重哈希校验机制，以极小的内存代价（如 4 字节的 CRC32 校验码）来消除哈希冲突导致的脏数据读取风险。</p>
+</blockquote>
+<h2 id="5">5. 总结</h2>
+<p>TinyCache 是对 Go 语言海量数据缓存场景下 GC 压力与锁竞争痛点的一次深度探索与重构。它继承了 BigCache 的零 GC 核心理念，但在数据模型与内存调度上进行了泛型化与结构化升级。</p>
+<p>通过将 <code>[]byte</code> 字节流队列替换为 <code>[]slot[T]</code> 随机访问数组，TinyCache 彻底消除了序列化与反序列化过程中的 CPU 及临时堆分配开销。同时，通过引入 FreeList 栈结构，它打破了传统 FIFO 队列依赖自然淘汰的局限，实现了底层内存空间的 <span class="arithmatex">\(O(1)\)</span> 即时回收与复用，显著提升了 CPU 缓存的局部性命中率。</p>
+<p>尽管这种极致的优化引入了“泛型 T 必须严格为纯值类型”的刚性约束，并在极端哈希碰撞场景下做出了原址覆盖的妥协，但这种系统设计上的取舍，为已知结构体缓存（如用户画像、行情快照等场景）带来了接近硬件极限的吞吐量与极低的延迟抖动。在高性能架构工程中，往往没有绝对完美的银弹，TinyCache 证明了通过精准剪裁冗余功能，可以为特定领域带来数量级上的性能飞跃。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.instant", "navigation.tracking", "toc.follow", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../javascripts/text-mml-svg.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

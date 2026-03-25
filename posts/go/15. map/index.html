@@ -1,0 +1,2339 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://liwh1227.github.io/posts/go/15.%20map/">
+      
+      
+        <link rel="prev" href="../14.%20sync.Pool/">
+      
+      
+        <link rel="next" href="../16.%20errgroup/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>15. map - LIWH.DEV</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#15-map" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="LIWH.DEV" class="md-header__button md-logo" aria-label="LIWH.DEV" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LIWH.DEV
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              15. map
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="white" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/liwh1227/liwh1227.github.io" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    liwh1227
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../00.%20GMP%20%E6%A8%A1%E5%9E%8B%E6%80%BB%E8%A7%88/" class="md-tabs__link">
+          
+  
+  
+  Posts
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="LIWH.DEV" class="md-nav__button md-logo" aria-label="LIWH.DEV" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    LIWH.DEV
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/liwh1227/liwh1227.github.io" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    liwh1227
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Posts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Posts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../00.%20GMP%20%E6%A8%A1%E5%9E%8B%E6%80%BB%E8%A7%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00. GMP 模型总览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01.%20Goroutine%28G%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01. Goroutine(G)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02.%20Machine%28M%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02. Machine(M)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03.%20Processor%28P%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03. Processor(P)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mheap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04. 内存管理  mheap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mcentral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05. 内存管理  mcentral
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mcache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06. 内存管理  mcache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07.%20GC--%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0%E6%B3%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07. GC  三色标记法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08.%20GC--%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08. GC  混合写屏障
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09.%20GC--%E8%B0%83%E5%BA%A6%E4%B8%8E%E7%9B%AE%E6%A0%87%E6%8E%A7%E5%88%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09. GC  调度与目标控制
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10.%20%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B--IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. 网络模型  IO多路复用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11.%20%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B--%E5%90%8CGMP%E6%A8%A1%E5%9E%8B%E5%8D%8F%E4%BD%9C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. 网络模型  同GMP模型协作
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12.%20%E5%B9%B6%E5%8F%91%E5%90%8C%E6%AD%A5--channel%20%26%20select/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. 并发同步  channel &amp; select
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13.%20%E5%B9%B6%E5%8F%91%E5%90%8C%E6%AD%A5--mutex%20%26%20rwmutex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. 并发同步  mutex &amp; rwmutex
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14.%20sync.Pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14. sync.Pool
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. map
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    15. map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 引言
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 核心结构
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. 核心结构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-hmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 hmap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-bmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 bmap
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 核心操作
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. 核心操作">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 创建
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 查找
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 写入
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 删除
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 扩容机制
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.5 扩容机制">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#351" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.1 翻倍扩容
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#352" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.2 等量扩容
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#353" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.3 渐进式迁移
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 迭代
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-gc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 同内存管理与 GC 交互
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 同内存管理与 GC 交互">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 按需分配和逃逸分析
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-hmapextra-gc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 hmap.extra 与 GC 优化
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 只扩不缩
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 并发
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 并发">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 读写操作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-syncmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 sync.Map
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 总结
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. 总结">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 常见的坑
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6.1 常见的坑">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#611-nil-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1.1 向nil map写操作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#612-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1.2 遍历中修改map
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#613-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1.3 key的选择
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#614" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1.4 内存泄漏
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 总结
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../16.%20errgroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    16. errgroup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2">
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    浮生半日
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    浮生半日
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E6%B5%AE%E7%94%9F%E5%8D%8A%E6%97%A5/%E6%88%91%E7%9A%84%E5%A7%A5%E5%A7%A5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    我的姥姥
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3">
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    系统架构
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    系统架构
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/00.%20%E7%A2%B3%E6%99%AE%E6%83%A0%E7%B3%BB%E7%BB%9F%E6%BC%94%E8%BF%9B/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00. 碳普惠系统演进
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/01.%20%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%AE%9E%E7%8E%B0%E9%AB%98%E6%80%A7%E8%83%BD%20Go%20%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01. 设计和实现高性能 Go 本地缓存
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 引言
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 核心结构
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. 核心结构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-hmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 hmap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-bmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 bmap
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 核心操作
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. 核心操作">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 创建
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 查找
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 写入
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 删除
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 扩容机制
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.5 扩容机制">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#351" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.1 翻倍扩容
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#352" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.2 等量扩容
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#353" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.3 渐进式迁移
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 迭代
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-gc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 同内存管理与 GC 交互
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 同内存管理与 GC 交互">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 按需分配和逃逸分析
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-hmapextra-gc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 hmap.extra 与 GC 优化
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 只扩不缩
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 并发
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 并发">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 读写操作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-syncmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 sync.Map
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 总结
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. 总结">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 常见的坑
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6.1 常见的坑">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#611-nil-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1.1 向nil map写操作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#612-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1.2 遍历中修改map
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#613-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1.3 key的选择
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#614" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1.4 内存泄漏
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 总结
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<p><span style="color:gray; font-size:0.9em;">📄 本文共 5995 字，预计阅读 15 分钟</span></p>
+<h1 id="15-map">15. map</h1>
+<h2 id="1">1. 引言</h2>
+<p>map 在编程语言中是非常常见的一种数据结构，其提供了<strong>平均 O(1)</strong> 的查询效率（最坏情况下会退化为 O(N)），但不同语言有不同的设计和实现。在 Go 语言中，map 作为内建类型，深度嵌入编译器和 runtime，编译阶段会将 map 操作（如 <code>m[key]</code>、<code>delete(m, key)</code>）直接替换为 runtime 包中特定的函数调用。</p>
+<p>这种与 runtime 的深度绑定，带来了很多优势：</p>
+<ul>
+<li><strong>编译期特化与类型安全</strong>：编译器根据 key/value 的类型自动选择不同的 runtime 函数（如 <code>mapaccess1_fast32</code>、<code>mapaccess1_faststr</code>）。</li>
+<li><strong>GC、内存分配与 map 的扩缩容机制深度协作</strong>：不仅仅是 map，很多其他组件的设计也都结合了这些特性。</li>
+</ul>
+<p>我们将从源码开始，结合平时在开发中常用 map 的一些操作来梳理内容。</p>
+<h2 id="2">2. 核心结构</h2>
+<h3 id="21-hmap">2.1 hmap</h3>
+<p>Go map 在运行时的核心表示是 <code>runtime.hmap</code> 结构体。以下是其关键字段:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">hmap</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="nx">count</span><span class="w">      </span><span class="kt">int</span><span class="w">            </span><span class="c1">// 当前元素数量, len(m) 直接读此字段  </span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nx">flags</span><span class="w">      </span><span class="kt">uint8</span><span class="w">          </span><span class="c1">// 并发读写检测标志位  </span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nx">B</span><span class="w">          </span><span class="kt">uint8</span><span class="w">          </span><span class="c1">// bucket 数量 = 2^B    </span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="nx">noverflow</span><span class="w">  </span><span class="kt">uint16</span><span class="w">         </span><span class="c1">// overflow bucket 的近似数量  </span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="nx">hash0</span><span class="w">      </span><span class="kt">uint32</span><span class="w">         </span><span class="c1">// hash 种子, 创建时随机生成  </span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="nx">buckets</span><span class="w">    </span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="w"> </span><span class="c1">// 指向 []bmap 数组, 大小 2^B</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nx">oldbuckets</span><span class="w"> </span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="w"> </span><span class="c1">// 扩容时指向旧 bucket 数组  </span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="nx">nevacuate</span><span class="w">  </span><span class="kt">uintptr</span><span class="w">        </span><span class="c1">// 扩容进度计数器  </span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="nx">extra</span><span class="w">      </span><span class="o">*</span><span class="nx">mapextra</span><span class="w">      </span><span class="c1">// overflow bucket 和其他辅助信息  </span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="p">}</span>
+</code></pre></div>
+<p><code>buckets</code> 指针指向连续内存块的<strong>起始位置</strong>，即指向第 0 个 bucket。每个 bucket 在 <code>runtime</code> 中都由 <code>bmap</code> 结构体来表示，<code>bmap</code>的代码定义如下：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">bmap</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nx">tophash</span><span class="w"> </span><span class="p">[</span><span class="nx">bucketCnt</span><span class="p">]</span><span class="kt">uint8</span><span class="w"> </span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="p">}</span>
+</code></pre></div>
+<p>这是一个静态的代码定义，在实际的运行中，编译器会根据你在代码中定义的具体类型（如<code>map[int64]string</code>）动态的扩充这个结构体，扩充后在内存中实际的结构体内容如下：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">bmap</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nx">tophash</span><span class="w"> </span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="kt">uint8</span><span class="w">   </span><span class="c1">// 源码里定义的 </span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nx">keys</span><span class="w"> </span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="nx">keyType</span><span class="w">    </span><span class="c1">// 编译器自动追加的 </span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nx">values</span><span class="w"> </span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="nx">elemType</span><span class="w"> </span><span class="c1">// 编译器自动追加的 </span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nx">overflow</span><span class="w"> </span><span class="kt">uintptr</span><span class="w">   </span><span class="c1">// 编译器自动追加的</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">}</span>
+</code></pre></div>
+<p>所以，<code>hmap.buckets</code> 指向的那个地址，既是 tophash 数组的起始地址，也是这整个bmap的起始地址，图1描述了<code>hmap</code>和<code>bmap</code>之间的关系：</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/15-map-hmap%E5%92%8Cbmap%E7%BB%93%E6%9E%84%E7%A4%BA%E6%84%8F%E5%9B%BE.png" data-desc-position="bottom"><img alt="" src="../../../assets/15-map-hmap%E5%92%8Cbmap%E7%BB%93%E6%9E%84%E7%A4%BA%E6%84%8F%E5%9B%BE.png"></a>
+<em>图1: hamp和bmap结构示意</em></p>
+<h3 id="22-bmap">2.2 bmap</h3>
+<p><code>bmap</code> 除了在编译阶段会展开外，其展开后的 tophash 以及 key/value 的字段布局都是经过精心设计的：</p>
+<ul>
+<li><strong>tophash快速过滤</strong>: 查找时先比对 hash 值的高 8 位（tophash），8 个 tophash 连续存储在同一 cache line 中，CPU 一次加载就能完成初筛，减少无效的完整 key 比较。</li>
+<li><strong>key/value分离存储</strong>：所有 key 连续排列，所有 value 连续排列（而非 key0-val0-key1-val1），这是为了减少内存对齐的 padding 浪费。</li>
+</ul>
+<p>tophash 的设计意味着即便发生哈希冲突，在大多数情况下只需比对 1 字节的 tophash 就能排除不匹配的 key，而无需做代价高昂的完整 key 比较。这是 Go map 在高负载下仍能保持较好性能的关键原因之一，以下为 tophash 关键数值的说明：</p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>宏常量名</th>
+<th>含义与运行时行为</th>
+<th>核心作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>emptyRest</code></td>
+<td>空槽位，且后续全空。<br>表示当前槽位为空，并且在这个 Bucket 的后续槽位（以及后续挂载的溢出桶）中，没有任何有效数据。</td>
+<td>性能优化的关键：查找过程遇到此标记时，立即终止遍历，无需继续向后扫描。</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>emptyOne</code></td>
+<td>空槽位，但后续可能有数据。<br>表示当前槽位为空（通常是因为原来的 Key 被 <code>delete</code> 删除了），但后续的槽位或溢出桶中可能还有有效数据。</td>
+<td>维持链条连续性：查找过程遇到此标记时，不能停止，必须跳过当前槽位继续向后查找。</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>evacuatedX</code></td>
+<td>已搬迁-低位区。<br>表示在扩容过程中，该槽位的数据已经被迁移到了新 Bucket 数组的<strong>前半部分</strong>（对应旧的 Bucket 索引）。</td>
+<td>扩容并发安全： 标记旧Bucket 的数据去向，防止在搬迁过程中丢失读写操作。</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>evacuatedY</code></td>
+<td>已搬迁-高位区。<br>表示在扩容过程中，该槽位的数据已经被迁移到了新 Bucket 数组的<strong>后半部分</strong>（对应 <code>旧索引 + 2^OldB</code>）。</td>
+<td>扩容并发安全:同上，区分扩容后的新位置（X还是Y取决于哈希值的下一位是0还是1）。</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>evacuatedEmpty</code></td>
+<td>已搬迁-原为空。<br>表示在扩容扫描时，发现该槽位本来就是空的（<code>emptyOne</code> 或<code>emptyRest</code>），现已标记为“搬迁处理完毕”。</td>
+<td>扩容元数据：明确标识该槽位已被处理过，避免重复扫描。</td>
+</tr>
+<tr>
+<td>&gt;= 5</td>
+<td><code>minTopHash</code></td>
+<td>有效数据。<br>表示存储的是 Key 哈希值的高 8 位（如果计算结果小于 5，会自动 +5 偏移）。</td>
+<td>快速过滤：用于快速比对 Key 是否可能匹配。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3">3. 核心操作</h2>
+<h3 id="31">3.1 创建</h3>
+<p>当我们使用 <code>make(map[K]V)</code> 或 <code>make(map[K]V, hint)</code> 创建 map 时，编译器会根据 hint 的大小选择不同的 runtime 函数：</p>
+<ul>
+<li><strong>hint &lt;= 8（小 map）</strong>：编译器调用 <code>makemap_small</code>，此时不会立即分配 bucket 数组，而是在第一次写入时才分配。这是一个重要的优化——很多 map 在创建后可能只存放很少的元素，延迟分配避免了不必要的内存开销。</li>
+<li><strong>hint &gt; 8</strong>：编译器调用 <code>makemap</code>，根据 hint 计算出合适的 B 值（满足负载因子约束），并立即分配 <code>2^B</code> 个 bucket。当 B ≥ 4 时，还会额外预分配约 <code>2^(B-4)</code> 个溢出桶（详见 4.1 节）。</li>
+</ul>
+<p>如果你能预估 map 的大小，在 <code>make</code> 时传入合理的 hint 值可以显著减少运行时的扩容次数。例如，<code>make(map[string]int, 1000)</code> 会一次性分配足够容纳 1000 个元素的空间，避免多次渐进式扩容带来的额外开销。</p>
+<h3 id="32">3.2 查找</h3>
+<p>当编译器遇到 <code>v := m[key]</code> 时，会生成对<code>runtime.mapaccess1</code>的调用（返回 value 指针），或<code>runtime.mapaccess2</code>（返回 value 指针和 bool）。查找流程如下：</p>
+<ol>
+<li>计算 hash：使用 <code>hmap.hash0</code> 作为种子，调用类型特定的 hash 函数。对于小类型（int32/int64/string），编译器会直接内联 hash 计算以避免函数调用开销。</li>
+<li>定位 bucket：<code>bucket_index = hash &amp; (2^B - 1)</code>，即 hash 的低 B 位。</li>
+<li>扩容中的双重检查：如果 <code>oldbuckets != nil</code>（说明正在扩容），需要额外检查旧 bucket 中对应位置的数据。因为扩容是渐进式的，目标 key 可能尚未从旧桶迁移到新桶。通过 <code>hash &amp; (2^(B-1) - 1)</code> 定位旧桶位置后，检查其 tophash 标记：如果已标记为 <code>evacuatedX</code>/<code>evacuatedY</code>，说明数据已迁移到新桶，回到新桶继续查找；如果未迁移，则直接在旧桶中查找。</li>
+<li>匹配 tophash：计算<code>tophash = hash &gt;&gt; (PtrSize*8 - 8)</code>（其中 <code>PtrSize</code> 是指针大小，64 位系统上为 8 字节，所以实际上是取 hash 的最高 8 位），在 bucket 的 tophash 数组中线性扫描匹配。</li>
+<li>比较完整 key：tophash 匹配后，比较完整 key 值。对于 string key，先比长度再比内容。</li>
+<li>遍历 overflow：当前 bucket 未找到，沿 overflow 链继续搜索。如果遍历过程中遇到 <code>emptyRest</code> 标记，立即终止，无需继续查找。</li>
+</ol>
+<p>查找过程的流程图如图2所示：</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/15-map-%E6%9F%A5%E6%89%BE%E6%B5%81%E7%A8%8B.png" data-desc-position="bottom"><img alt="" src="../../../assets/15-map-%E6%9F%A5%E6%89%BE%E6%B5%81%E7%A8%8B.png"></a>
+<em>图2: map查找流程图</em></p>
+<p>理解查找流程后可以明白，为什么 Go map 在扩容期间不会出现"读取不到已存在key"的问题——runtime 会同时检查新旧两个桶，保证数据一致性。</p>
+<h3 id="33">3.3 写入</h3>
+<p>写入流程比查找更复杂一些，因为涉及扩容判定和内存分配：</p>
+<ol>
+<li>并发写检测：检查 <code>flags</code> 的 <code>hashWriting</code> 位，若已设置则直接 <code>fatal（"concurrent map writes"）</code>。然后设置 hashWriting 位。</li>
+<li>触发扩容判定：写入前检查是否需要扩容（详见3.5节）。</li>
+<li>查找插入位置：沿 bucket 和 overflow 链查找已有 key 或第一个空位。</li>
+<li>分配 overflow：如果所有位置都满，分配新的 overflow bucket。</li>
+<li>写入并更新 count：将 key/value 写入对应位置，设置 tophash 并做 count++。</li>
+<li>清除写标记：操作完成后清除<code>hashWriting</code>位。</li>
+</ol>
+<p>写入过程的流程图如图3所示：</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/15-map-%E5%86%99%E5%85%A5%E6%B5%81%E7%A8%8B.png" data-desc-position="bottom"><img alt="" src="../../../assets/15-map-%E5%86%99%E5%85%A5%E6%B5%81%E7%A8%8B.png"></a>
+<em>图3: map写入流程图</em></p>
+<h3 id="34">3.4 删除</h3>
+<p>删除操作找到目标 key 后，会将 tophash 设置为<code>emptyOne</code>（值为 1），并清零 key 和 value 的内存（帮助 GC 回收引用的对象）。之后会向前回溯，将连续的<code>emptyOne</code>转化为<code>emptyRest</code>，以优化后续查找。</p>
+<p>需要注意的是，删除不会缩减 bucket 数组的大小--map 只扩不缩，已分配的内存在 map 生命周期内不会归还。这一特性对内存管理有重要影响（详见4.3节）。</p>
+<p>删除过程的流程图如图4所示：</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/15-map-%E5%88%A0%E9%99%A4%E6%B5%81%E7%A8%8B.png" data-desc-position="bottom"><img alt="" src="../../../assets/15-map-%E5%88%A0%E9%99%A4%E6%B5%81%E7%A8%8B.png"></a>
+<em>图4: map删除流程图</em></p>
+<p><code>emptyOne</code> → <code>emptyRest</code> 的回溯升级是一个容易被忽略的优化细节。它确保了删除操作不会让后续查找变慢--如果一个 bucket 尾部的若干元素都被删除了，查找到这些位置时可以立即终止，而不需要继续遍历整条 overflow 链。</p>
+<h3 id="35">3.5 扩容机制</h3>
+<p>Go map 的设计在性能与内存之间做了精细的权衡。为了保证哈希表的查找效率（尽量维持平均 <span class="arithmatex">\(O(1)\)</span> 时间复杂度）并解决内存碎片问题，runtime 定义了两种不同的扩容触发条件，分别对应翻倍扩容和等量扩容两种策略。</p>
+<h4 id="351">3.5.1 翻倍扩容</h4>
+<p>翻倍扩容是最常见的扩容方式，为了解决数据过多导致哈希冲突严重的问题。当 <span class="arithmatex">\(\frac{\text{count}}{2^B} &gt; 6.5\)</span> 时，会触发翻倍扩容。其中<code>count</code>时 map 中的元素数量，<code>2^B</code>是桶的数量，6.5 即负载因子阈值。</p>
+<p>当buckets中的元素过多时，哈希冲突的概率急剧增加，大量 key 会被挤在同一个 bucket 或挂在 overflow bucket 上，这会导致平均O(1)退化为O(N)。扩容策略如下：</p>
+<ul>
+<li><strong>新建 buckets</strong>：runtime 会分配一个新的 buckets 数组，其容量是旧buckets 的2倍（<code>B = B + 1</code>）;</li>
+<li><strong>数据重分布</strong>：旧数据会被重新分配到新的、更大的 buckets 空间中，从而降低哈希冲突，恢复查找性能。</li>
+</ul>
+<p>翻倍扩容时，旧 bucket 中的每个元素根据 hash 值新增的那一位（第 B位），被分流到新数组的两个 bucket 中（X=原位 或 Y=原位+旧容量），这就是 <code>evacuatedX</code>/<code>evacuatedY</code> 两个 tophash 标记的含义（见2.2小节中的表信息）。</p>
+<h4 id="352">3.5.2 等量扩容</h4>
+<p>等量扩容不增加 buckets 的数量，而是为了解决内存碎片和伪内存泄漏问题。由于 overflow buckets 数量过多，具体阈值取决于 B 的大小:</p>
+<ul>
+<li>当 <span class="arithmatex">\(B &lt; 15\)</span> 时：overflow buckets 数量 <span class="arithmatex">\(\ge 2^B\)</span>。</li>
+<li>当 <span class="arithmatex">\(B \ge 15\)</span> 时：overflow buckets 数量 <span class="arithmatex">\(\ge 2^{15}\)</span>。</li>
+</ul>
+<p>这种情况通常发生在频繁插入后又频繁删除的场景。虽然 map 中的元素总数（count）减少了，负载因子可能并不高，但之前分配的大量 overflow buckets 依然存在且大量槽位是空的（tophash 为 <code>emptyOne</code>）。这导致查找变慢（需要遍历很长的 overflow 链表，尽管里面大多是空位）和空间浪费（大量未被释放的空 bucket 占用了内存）。</p>
+<p>等量扩容的策略如下：</p>
+<ul>
+<li><strong>新建 buckets</strong>：runtime 分配一个新的 buckets 数组，容量与旧 buckets 保持一致（B 不变）。</li>
+<li><strong>内存整理</strong>：将旧 buckets 中的有效元素紧凑地搬迁到新 buckets 中。</li>
+<li>效果：搬迁后，overflow buckets 的数量会大幅减少，原本松散的数据被排列得更紧密，从而提高了 CPU 缓存命中率并回收了多余的内存空间。</li>
+</ul>
+<p>如果你的程序存在"大量写入 → 大量删除 → 少量存活"的模式（如临时缓存场景），即使 map 中只剩少量元素，底层的 overflow 链仍可能很长。此时 runtime 的等量扩容会自动整理内存布局，但这个整理操作本身也有开销，需要在设计上尽量避免这种访问模式。</p>
+<h4 id="353">3.5.3 渐进式迁移</h4>
+<p>无论上述何种扩容策略，runtime 都采用渐进式迁移的策略：扩容不会一次性完成所有数据迁移，而是在每次 <code>mapassign</code> 和 <code>mapdelete</code> 操作时迁移 1~2 个旧 bucket（调用 <code>growWork</code>），直到所有旧 bucket 迁移完毕。这种设计将扩容的 O(N) 开销分摊到后续的写操作中，避免了单次操作的延迟尖峰。</p>
+<h3 id="36">3.6 迭代</h3>
+<p>当我们使用 <code>for k, v := range m</code> 遍历 map 时，编译器会将其转化为对 <code>runtime.mapiterinit</code> 和 <code>runtime.mapiternext</code> 的调用。迭代的核心机制如下：</p>
+<p><strong>随机起始位置</strong>：<code>mapiterinit</code> 会随机选择一个起始 bucket 和起始 slot 作为遍历的起点。这就是为什么每次 <code>range map</code> 的顺序都不同-- Go 故意在语言层面引入随机性，防止开发者依赖 map 的遍历顺序（这个顺序在不同 Go 版本、不同运行环境下都可能变化）。</p>
+<p><strong>扩容中的迭代处理</strong>：如果迭代过程中 map 正在扩容，迭代器需要同时处理新旧两个 bucket 数组。对于每个逻辑上的 bucket 位置，迭代器会检查旧桶是否已迁移：如果已迁移，直接访问新桶；如果未迁移，从旧桶中读取数据，但只返回属于当前新桶位置的元素（通过检查 hash 值来判断）。</p>
+<p>所以我们需要注意，在 <code>range</code> 遍历过程中对 map 做删除操作是安全的（runtime 不会 panic），但新增操作可能触发扩容导致 bucket 迁移，使得新增的 key 在本次遍历中不一定能被访问到。因此应避免在 <code>range</code> 中新增元素。如果确实需要边遍历边修改，建议先收集需要修改的 key，遍历结束后再统一操作。</p>
+<h2 id="4-gc">4. 同内存管理与 GC 交互</h2>
+<h3 id="41">4.1 按需分配和逃逸分析</h3>
+<p>当我们使用 <code>make(map[k]v, hint)</code> 创建 map 时，runtime 会根据 hint 的大小和编译期的逃逸分析结果，决定内存分配的位置和方式。</p>
+<p>小容量map在栈上分配：<code>hmap</code> 结构体和底层的 bucket 数组会直接在栈上分配。这种分配方式完全避开了堆内存分配器，无需垃圾回收（GC）介入，函数返回时自动释放，性能极高。</p>
+<p>当 hint 较大或 map 发生逃逸时，runtime 必须在堆上申请内存。此时，<code>hmap.buckets</code> 指向的是一块通过 <code>mallocgc</code> 分配的连续内存区域。对于较大的 <code>hint</code>（计算出 <span class="arithmatex">\(B \ge 4\)</span>），<code>runtime</code>会额外采取<strong>预分配策略</strong>：</p>
+<ul>
+<li>它不仅分配 <span class="arithmatex">\(2^B\)</span> 个标准桶，还会额外分配约 <span class="arithmatex">\(2^{B-4}\)</span> 个<strong>溢出桶</strong>，这些溢出桶在物理内存上紧跟在标准桶数组的末尾。</li>
+<li>当发生哈希冲突需要使用溢出桶时，可以直接从这段连续内存中获取，避免了频繁调用 <code>mallocgc</code> 产生的系统开销，同时提升了 CPU 缓存命中率。</li>
+</ul>
+<p>图5描述了预分配的流程：
+<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/15-map-%E9%A2%84%E5%88%86%E9%85%8D%E6%9C%BA%E5%88%B6-1.png" data-desc-position="bottom"><img alt="" src="../../../assets/15-map-%E9%A2%84%E5%88%86%E9%85%8D%E6%9C%BA%E5%88%B6-1.png"></a>
+<em>图5: map预分配机制</em></p>
+<p>除了根据 map 容量大小进行内存分配策略外，如果 key 或 value 的大小超过 128 字节，也会采取不同的策略：bucket 内部将不再直接存储数据本身，而是存储指向数据的指针，实际数据会被分配在堆上。这是为了避免单个 bucket 过大，导致扫描和扩容时的拷贝开销不可控。</p>
+<h3 id="42-hmapextra-gc">4.2 hmap.extra 与 GC 优化</h3>
+<p>Go 的垃圾回收器在扫描内存时，会遍历所有包含指针的对象。如果 map 极大，GC 扫描 bucket 链表会带来巨大的性能损耗。</p>
+<p>对此 Go 做了一个关键优化——如果 map 的 key 和 value 都不包含指针（例如 <code>map[int]int</code>），runtime 会将整个 buckets 数组标记为 <code>no-scan</code>。但这带来一个问题：bucket 结构体中包含一个 overflow 指针，如果不扫描，GC 会误回收溢出桶。</p>
+<p>runtime 使用 <code>hmap.extra.overflow</code> 字段（见 2.1 节的 hmap 结构体）接管所有溢出桶的指针。GC 只需要扫描 <code>hmap.extra</code> 即可知道哪些溢出桶是存活的，从而跳过对巨大的 buckets 数组的逐个扫描。</p>
+<p>对于大规模 map，如果 key 和 value 都是非指针类型（如 <code>map[int64]int64</code>），GC 的扫描开销会显著降低。如果你的 map 存储了大量元素且对 GC 延迟敏感，尽量避免 value 中包含指针类型（string 底层也包含指针）。一个常见的优化技巧是将 <code>map[int]*BigStruct</code> 改为将数据存储在 slice 中，map 只存储 index：<code>map[int]int32</code>。</p>
+<h3 id="43">4.3 只扩不缩</h3>
+<p>Go map 的 bucket 数组一旦扩容就不会缩小。这意味着如果你先向 map 写入 100 万个元素再全部删除，底层 bucket 数组仍然保持 100 万元素级别的大小。这在以下场景中会造成内存浪费：</p>
+<ul>
+<li><strong>缓存场景</strong>：定期清理过期数据后，map 占用的内存不会下降。</li>
+<li><strong>流量峰值</strong>：高峰期 map 扩容后，低峰期内存不会回收。</li>
+</ul>
+<p>解决方案是定期重建 map（创建新 map 并迁移存活数据）或使用带 TTL 的 map 库。具体示例见 6.1.4 节。</p>
+<h2 id="5">5. 并发</h2>
+<h3 id="51">5.1 读写操作</h3>
+<p>Go map 没有内置锁，但在运行时层面实现了并发读写检测。其机制是：</p>
+<ul>
+<li>写操作设置标志：<code>mapassign</code> 和 <code>mapdelete</code>在进入时设置 <code>hmap.flags</code> 的 <code>hashWriting</code> 位(值为 4）。</li>
+<li>所有操作检查标志：<code>mapaccess</code>、<code>mapassign</code>、<code>mapdelete</code>、<code>mapiterinit</code> 在进入时都会检查 <code>hashWriting</code> 位。</li>
+<li>检测到并发直接 fatal：不是 panic，而是 fatal——不可被 recover 捕获。程序直接崩溃并打印 <code>concurrent map read and map write</code> 或 <code>concurrent map writes</code>。</li>
+</ul>
+<p>需要特别强调：这是一个尽力检测，不是线程安全保障。两个 goroutine 同时写 map 完全可能在没有触发检测的情况下导致内存损坏、无限循环等未定义行为。</p>
+<h3 id="52-syncmap">5.2 sync.Map</h3>
+<p><code>sync.Map</code> 是 Go 标准库提供的并发安全 map，但它并非 map + mutex 的简单封装。其核心设计是读写分离:</p>
+<ul>
+<li>read表：原子指针指向一个只读的 map（无需加锁即可访问），覆盖最近被读取的key。</li>
+<li>dirty表：加锁保护的 map，包含所有最新数据。新 key 只写入dirty 表。</li>
+<li>提升机制：当read表miss次数（<code>misses</code>）超过dirty表大小时，dirty表整体提升为新的read表。</li>
+</ul>
+<p><code>sync.Map</code>的数据结构定义如下：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Map</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="nx">_</span><span class="w">      </span><span class="nx">noCopy</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nx">mu</span><span class="w">     </span><span class="nx">Mutex</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="nx">read</span><span class="w">   </span><span class="nx">atomic</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">[</span><span class="nx">readOnly</span><span class="p">]</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="nx">dirty</span><span class="w">  </span><span class="kd">map</span><span class="p">[</span><span class="kt">any</span><span class="p">]</span><span class="o">*</span><span class="nx">entry</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="nx">misses</span><span class="w"> </span><span class="kt">int</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">}</span>
+</code></pre></div>
+<p>从上述的核心设计和数据结构中，<code>sync.Map</code> 的读是接近无锁访问的，但是新 key 的写入需要加锁往 dirty 结构中写入。假如当前的场景中，读操作远多于写操作，或者说 key 比较固定，那么使用 <code>sync.Map</code> 可以带来非常高的性能提升；但是，假如存在频繁增删 key（读操作 miss 次数增多），就会造成 dirty 表反复创建和提升，锁竞争严重，性能反而不如 <code>RWMutex + map</code> 的方式。</p>
+<p>下面的表给出了在不同场景中两者间的主要区别：</p>
+<table>
+<thead>
+<tr>
+<th><strong>维度</strong></th>
+<th><strong>map + RWMutex</strong></th>
+<th><strong>sync.Map</strong></th>
+<th><strong>实现原理</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>读性能</td>
+<td>良好（受限于 RLock 竞争）</td>
+<td>极高 (接近 <span class="arithmatex">\(O(1)\)</span>)</td>
+<td>read 采用 <code>atomic.LoadPointer</code>，无锁，无 CPU 缓存失效。</td>
+</tr>
+<tr>
+<td>写性能</td>
+<td>良好（受限于互斥锁）</td>
+<td>极差</td>
+<td>写新 key 需加 Mutex，且可能触发全量数据从 read 复制到 dirty 的极重操作。</td>
+</tr>
+<tr>
+<td>修改已有值</td>
+<td>良好</td>
+<td>极高</td>
+<td>若 key 已在 read 中，通过底层 CAS 直接修改指针，无锁。</td>
+</tr>
+<tr>
+<td>内存占用</td>
+<td>较小（单一份数据）</td>
+<td>较大（可能翻倍）</td>
+<td><code>sync.Map</code> 经常需要同时维护 read 和 dirty 两份映射表。</td>
+</tr>
+</tbody>
+</table>
+<p>在实际的开发应用中，根据实际场景进行选择对系统稳定性和性能的影响还是很大的。比较稳妥的做法是使用 <code>RWMutex + map</code> 的组合来解决问题，因为其平衡性比较好，不会出现大的问题；但如果面对特定场景，例如某些配置项缓存、静态路由等读多写极少的场景，选择 <code>sync.Map</code> 性能更高。</p>
+<h2 id="6">6. 总结</h2>
+<h3 id="61">6.1 常见的坑</h3>
+<p>Go map是在实际开发中非常常用的一种数据结构，但是由于其底层实现上的复杂性，所以在使用过程中需要特别注意。</p>
+<h4 id="611-nil-map">6.1.1 向nil map写操作</h4>
+<p>这个问题在刚开始接触 Go 的时候经常犯，见如下代码：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// 1. 声明map，未初始化</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kd">var</span><span class="w"> </span><span class="nx">m</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1">// OK, 返回 0</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nx">_</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">m</span><span class="p">[</span><span class="s">"a"</span><span class="p">]</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1">// panic: assignment to entry in nil map</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="nx">m</span><span class="p">[</span><span class="s">"a"</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1</span>
+</code></pre></div>
+<p>nil map 的 <code>hmap</code> 指针为 nil，<code>mapaccess</code> 对 nil 做了处理（直接返回零值），但 <code>mapassign</code> 在解引用 <code>hmap</code> 字段时会触发空指针异常。解决方案是始终使用 <code>make(map[K]V)</code>或字面量 <code>map[K]V{}</code> 初始化。</p>
+<h4 id="612-map">6.1.2 遍历中修改map</h4>
+<p>这里只讨论单协程修改 map 的场景。前文中（第 3.5 节）对 map 的扩容做过详细讨论，当 map 在增加操作下可能触发扩容导致 bucket 的迁移，一旦 bucket 发生迁移，那么在边查边增的逻辑下就会导致当前 key 在本次遍历中无法被命中。所以要避免 range 行为中新增的操作。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// 可能导致新增的 key 在本次 range 中不可见</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">for</span><span class="w"> </span><span class="nx">k</span><span class="p">,</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">m</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">someCondition</span><span class="p">(</span><span class="nx">k</span><span class="p">,</span><span class="w"> </span><span class="nx">v</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">       </span><span class="nx">m</span><span class="p">[</span><span class="nx">newKey</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">newValue</span><span class="w"> </span><span class="c1">// 可能触发扩容，导致不确定行为  </span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="c1">// 先收集，后修改  </span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="kd">var</span><span class="w"> </span><span class="nx">toAdd</span><span class="w"> </span><span class="p">[]</span><span class="kd">struct</span><span class="p">{</span><span class="w"> </span><span class="nx">k</span><span class="p">,</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="k">for</span><span class="w"> </span><span class="nx">k</span><span class="p">,</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">m</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">someCondition</span><span class="p">(</span><span class="nx">k</span><span class="p">,</span><span class="w"> </span><span class="nx">v</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">       </span><span class="nx">toAdd</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">toAdd</span><span class="p">,</span><span class="w"> </span><span class="kd">struct</span><span class="p">{</span><span class="w"> </span><span class="nx">k</span><span class="p">,</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="p">}{</span><span class="w"> </span><span class="nx">newKey</span><span class="p">,</span><span class="w"> </span><span class="nx">newValue</span><span class="p">})</span><span class="w">  </span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">item</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">toAdd</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">    </span><span class="nx">m</span><span class="p">[</span><span class="nx">item</span><span class="p">.</span><span class="nx">k</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">item</span><span class="p">.</span><span class="nx">v</span><span class="w">  </span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="p">}</span>
+</code></pre></div>
+<h4 id="613-key">6.1.3 key的选择</h4>
+<p>Go map 中规定，key 值必须是可以比较的（<code>==</code> 或 <code>!=</code>），这种规定的核心原因是，map 底层的 key 值是通过 hash 运算并且在 hash 冲突时必须进行比较确定 key 的具体值才能命中实际的槽位。</p>
+<p>除了 key 可比较外，不同类型的 key 的性能表现差距很大。我们应尽量选择 int 或 string 为 key，因为编译器会为这些类型生成特化的 hash 和比较函数（如 <code>mapaccess1_fast64</code>、<code>mapaccess1_faststr</code>），比较时效率较高。应避免使用数组、struct 或 interface 为 key--它们需要走通用的 hash 和比较路径，开销更大。</p>
+<h4 id="614">6.1.4 内存泄漏</h4>
+<p>由于 map 只扩不缩的特性（见 4.3 节），以下场景容易导致内存泄漏：</p>
+<p><strong>缓存未设上限</strong>：不断向 map 添加缓存条目但从不淘汰。应设置最大容量并实现 LRU 等淘汰策略。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1">// 不推荐：无限增长的缓存  </span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kd">var</span><span class="w"> </span><span class="nx">cache</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">Data</span><span class="p">)</span><span class="w">  </span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="kd">func</span><span class="w"> </span><span class="nx">Set</span><span class="p">(</span><span class="nx">key</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">val</span><span class="w"> </span><span class="nx">Data</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">val</span><span class="w"> </span><span class="c1">// 只增不减，内存持续增长  </span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="c1">// 推荐：定期重建 mapfunc RebuildCache() {  </span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">    </span><span class="nx">newCache</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">Data</span><span class="p">,</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">activeKeys</span><span class="p">))</span><span class="w">  </span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">key</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">activeKeys</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">       </span><span class="k">if</span><span class="w"> </span><span class="nx">val</span><span class="p">,</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">          </span><span class="nx">newCache</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">val</span><span class="w">  </span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">       </span><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">    </span><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">    </span><span class="nx">cache</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">newCache</span><span class="w"> </span><span class="c1">// 旧 map 被 GC 回收，释放多余的 bucket 内存  </span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>goroutine 局部 map 泄漏</strong>：goroutine 中创建的 map 因 goroutine 泄漏而无法释放。这本质上是 goroutine 泄漏问题，但 map 的只扩不缩特性会放大内存占用。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1">// 如果 ch 永远没有数据，goroutine 和其中的 map 都无法被 GC 回收  </span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">go</span><span class="w"> </span><span class="kd">func</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="nx">localMap</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span><span class="w">  </span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">item</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">ch</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// ch 永远阻塞 → goroutine 泄漏  </span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">       </span><span class="nx">localMap</span><span class="p">[</span><span class="nx">item</span><span class="p">.</span><span class="nx">Key</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">item</span><span class="p">.</span><span class="nx">Value</span><span class="w">  </span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="p">}</span><span class="w">  </span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="p">}()</span>
+</code></pre></div>
+<p><strong>高峰流量后的内存驻留</strong>：高峰期 map 扩容到很大，低峰期即使删除了大量元素，底层内存也不会释放。解决方案同样是定期重建 map，或在架构层面使用带 TTL 和容量限制的缓存库。</p>
+<h3 id="62">6.2 总结</h3>
+<p>Go 语言中的 map 并非一个简单的哈希表数据结构，在剖析其底层源码与运行机制后，我们对 map 的主要特性做下总结：</p>
+<ul>
+<li><strong>内存与性能</strong>：为了更好的利用 CPU 缓存和内存对齐，<code>bmap</code> 摒弃了常规的 <code>key/value</code> 交替存储，采用键值分离的紧凑布局；为了降低大容量 map 的 GC 扫描成本，引入了 <code>mapextra</code> 机制。</li>
+<li><strong>低延迟</strong>：无论是翻倍扩容还是等量整理，没有采用 Stop-The-World 的一次性搬迁，而是采取了渐进式迁移的策略，将 <span class="arithmatex">\(O(N)\)</span> 的扩容成本平摊到每一次读写操作中。</li>
+<li><strong>并发安全</strong>：放弃了原生的线程安全控制，仅提供尽力而为的并发读写检测（fatal 机制）。这是一个有意的设计取舍，为不需要并发安全的场景（绝大多数场景）避免了锁开销。</li>
+<li><strong>只增不减</strong>：明确 delete 只切断业务数据引用而不释放 bucket 底层数组，所以我们不能滥用 map ，而要在特定的场景采取不同的策略。</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.instant", "navigation.tracking", "toc.follow", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../javascripts/text-mml-svg.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>
