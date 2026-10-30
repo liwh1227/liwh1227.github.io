@@ -1,11 +1,16 @@
 site_name: LIWH.DEV
+site_author: Li
+site_description: Li 的技术博客，记录 Go 运行时、区块链应用与系统架构实践。
 site_url: https://liwh1227.github.io/
 repo_url: https://github.com/liwh1227/liwh1227.github.io
 repo_name: liwh1227
 
-# 1. 只有黑白，不需要复杂的搜索建议
 theme:
   name: material
+  language: zh
+  custom_dir: overrides
+  icon:
+    logo: material/code-braces
   features:
     - navigation.tabs        # 顶部导航
     - navigation.instant     # 类似 SPA 的无刷新跳转
@@ -13,7 +18,6 @@ theme:
     - toc.follow             # 侧边栏跟随
     - content.code.copy
 
-  # 2. 调色板配置 (配合下方的 CSS 实现纯黑白)
   palette:
     # 明亮模式 (Light Mode)
     - scheme: default
@@ -21,7 +25,7 @@ theme:
       accent: black
       toggle:
         icon: material/brightness-7
-        name: Switch to dark mode
+        name: 切换至深色模式
 
     # 暗黑模式 (Dark Mode)
     - scheme: slate
@@ -29,12 +33,10 @@ theme:
       accent: white
       toggle:
         icon: material/brightness-4
-        name: Switch to light mode
+        name: 切换至浅色模式
 
-  # 3. 字体配置 (推荐使用系统字体或极简无衬线字体)
-  font:
-    text: Inter
-    code: JetBrains Mono
+  # 使用系统字体，避免外部字体请求影响首屏加载。
+  font: false
 
 # 4. 引入自定义 CSS (这是实现黑白风格的关键)
 extra_css:
@@ -57,7 +59,9 @@ markdown_extensions:
   - footnotes
 
 plugins:
-  - search
+  - search:
+      # 保留代码术语的完整拼写，避免 tinycache 等词被词干化后漏检。
+      pipeline: []
   - awesome-pages
   - glightbox
 

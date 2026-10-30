@@ -1,0 +1,7 @@
+nav:
+  - 首页: index.md
+  - 文章: posts
+  - 阅读地图: reading.md
+  - 项目实践: projects.md
+  - 关于我: about.md
+  - ...

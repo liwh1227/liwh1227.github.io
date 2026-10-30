@@ -2,3 +2,8 @@
 .obsidian
 .obsidian/workspace.json
 .DS_Store
+
+# Local builds and Python bytecode
+/site/
+__pycache__/
+*.py[cod]

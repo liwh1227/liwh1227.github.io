@@ -1,0 +1,20 @@
+title: Go 运行时
+nav:
+  - GMP 模型总览: 00. GMP 模型总览.md
+  - Goroutine（G）: 01. Goroutine(G).md
+  - Machine（M）: 02. Machine(M).md
+  - Processor（P）: 03. Processor(P).md
+  - 内存管理 · mheap: 04. 内存管理--mheap.md
+  - 内存管理 · mcentral: 05. 内存管理--mcentral.md
+  - 内存管理 · mcache: 06. 内存管理--mcache.md
+  - GC · 三色标记法: 07. GC--三色标记法.md
+  - GC · 混合写屏障: 08. GC--混合写屏障.md
+  - GC · 调度与目标控制: 09. GC--调度与目标控制.md
+  - 网络模型 · I/O 多路复用: 10. 网络模型--IO多路复用.md
+  - 网络模型 · 与 GMP 协作: 11. 网络模型--同GMP模型协作.md
+  - 并发同步 · Channel: 12. 并发同步--channel.md
+  - 并发同步 · Mutex 与 RWMutex: 13. 并发同步--mutex & rwmutex.md
+  - sync.Pool: 14. sync.Pool.md
+  - Map: 15. map.md
+  - errgroup: 16. errgroup.md
+  - ...
