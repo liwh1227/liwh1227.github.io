@@ -1,0 +1,2015 @@
+<!DOCTYPE html><html lang="zh" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="从个人工具使用经历出发，重新讨论 AI 的能力、交付成本与岗位变化，并推演个人代理、按需软件和小团队的未来。">
+      
+      
+        <meta name="author" content="Li">
+      
+      
+        <link rel="canonical" href="https://liwh1227.github.io/posts/%E6%B5%AE%E7%94%9F%E5%8D%8A%E6%97%A5/%E5%85%B3%E4%BA%8Eai/">
+      
+      
+        <link rel="prev" href="../../%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/04.%20%E7%A7%AF%E5%88%86%E8%A1%A8%E6%B0%B4%E5%B9%B3%E5%88%86%E8%A1%A8%E6%96%B9%E6%A1%88/">
+      
+      
+        <link rel="next" href="../../../reading/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>关于 AI：工作重组与工程师的选择 - LIWH.DEV</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ai" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="LIWH.DEV" class="md-header__button md-logo" aria-label="LIWH.DEV" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 3a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2H3v2h1a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h2v-2H8v-5a2 2 0 0 0-2-2 2 2 0 0 0 2-2V5h2V3m6 0a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h1v2h-1a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-2v-2h2v-5a2 2 0 0 1 2-2 2 2 0 0 1-2-2V5h-2V3z"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LIWH.DEV
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              关于 AI：工作重组与工程师的选择
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="black" aria-label="切换至深色模式" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换至深色模式" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="white" aria-label="切换至浅色模式" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换至浅色模式" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/liwh1227/liwh1227.github.io" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    liwh1227
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../go/00.%20GMP%20%E6%A8%A1%E5%9E%8B%E6%80%BB%E8%A7%88/" class="md-tabs__link">
+          
+  
+  
+  文章
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../reading/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  阅读地图
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../projects/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  项目实践
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  关于我
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="LIWH.DEV" class="md-nav__button md-logo" aria-label="LIWH.DEV" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 3a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2H3v2h1a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h2v-2H8v-5a2 2 0 0 0-2-2 2 2 0 0 0 2-2V5h2V3m6 0a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h1v2h-1a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-2v-2h2v-5a2 2 0 0 1 2-2 2 2 0 0 1-2-2V5h-2V3z"></path></svg>
+
+    </a>
+    LIWH.DEV
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/liwh1227/liwh1227.github.io" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    liwh1227
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    文章
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    文章
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1">
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go 运行时
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go 运行时
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/00.%20GMP%20%E6%A8%A1%E5%9E%8B%E6%80%BB%E8%A7%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GMP 模型总览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/01.%20Goroutine%28G%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Goroutine（G）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/02.%20Machine%28M%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Machine（M）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/03.%20Processor%28P%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Processor（P）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/04.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mheap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    内存管理 · mheap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/05.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mcentral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    内存管理 · mcentral
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/06.%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86--mcache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    内存管理 · mcache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/07.%20GC--%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0%E6%B3%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GC · 三色标记法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/08.%20GC--%E6%B7%B7%E5%90%88%E5%86%99%E5%B1%8F%E9%9A%9C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GC · 混合写屏障
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/09.%20GC--%E8%B0%83%E5%BA%A6%E4%B8%8E%E7%9B%AE%E6%A0%87%E6%8E%A7%E5%88%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GC · 调度与目标控制
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/10.%20%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B--IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    网络模型 · I/O 多路复用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/11.%20%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B--%E5%90%8CGMP%E6%A8%A1%E5%9E%8B%E5%8D%8F%E4%BD%9C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    网络模型 · 与 GMP 协作
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/12.%20%E5%B9%B6%E5%8F%91%E5%90%8C%E6%AD%A5--channel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    并发同步 · Channel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/13.%20%E5%B9%B6%E5%8F%91%E5%90%8C%E6%AD%A5--mutex%20%26%20rwmutex/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    并发同步 · Mutex 与 RWMutex
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/14.%20sync.Pool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sync.Pool
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/15.%20map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../go/16.%20errgroup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    errgroup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2">
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    系统架构
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    系统架构
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/00.%20%E7%A2%B3%E6%99%AE%E6%83%A0%E7%B3%BB%E7%BB%9F%E6%BC%94%E8%BF%9B/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    碳普惠系统演进
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/01.%20%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%AE%9E%E7%8E%B0%E9%AB%98%E6%80%A7%E8%83%BD%20Go%20%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    高性能 Go 本地缓存 · tinycache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/03.%20%E5%8D%9A%E5%AE%A2%E7%B3%BB%E7%BB%9F%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E6%80%BB%E4%BD%93%E8%AE%BE%E8%AE%A1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    博客系统前后端分离设计
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/04.%20%E7%A7%AF%E5%88%86%E8%A1%A8%E6%B0%B4%E5%B9%B3%E5%88%86%E8%A1%A8%E6%96%B9%E6%A1%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    积分表水平分表方案
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    浮生半日
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    浮生半日
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    关于 AI
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    关于 AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 工具采用与真实需求
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 模型能力与交付能力
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. 模型能力与交付能力">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 基准测试的含义与范围
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 效率应以完整任务衡量
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 技术需求与岗位需求
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. 技术需求与岗位需求">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 任务暴露不等于岗位替代率
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 工程基础的价值需要重新表达
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 三种可能的工作形态
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 三种可能的工作形态">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 维护长期状态的个人代理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 按任务生成的短期软件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 小团队扩张与培养路径收缩
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 个人实践的取舍
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 个人实践的取舍">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 按任务分配自主权
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 用两周验证一个持续需求
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 保留独立形成判断的过程
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 不确定性与选择
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    阅读地图
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../projects/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    项目实践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    关于我
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 工具采用与真实需求
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 模型能力与交付能力
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. 模型能力与交付能力">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 基准测试的含义与范围
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 效率应以完整任务衡量
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 技术需求与岗位需求
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. 技术需求与岗位需求">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 任务暴露不等于岗位替代率
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 工程基础的价值需要重新表达
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 三种可能的工作形态
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 三种可能的工作形态">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 维护长期状态的个人代理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 按任务生成的短期软件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 小团队扩张与培养路径收缩
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 个人实践的取舍
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 个人实践的取舍">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 按任务分配自主权
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 用两周验证一个持续需求
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 保留独立形成判断的过程
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 不确定性与选择
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="ai">关于 AI：工作重组与工程师的选择</h1>
+<p class="reading-meta" aria-label="阅读信息">约 5,311 字 · 14 分钟阅读</p>
+<p>最早使用 ChatGPT 时，让我感到新鲜的并不只是回答速度。以前学习一个问题，要先搜索、筛选，再把不同文章拼起来；现在可以直接讨论，追问不理解的地方，要求换一种解释。获取知识第一次有了接近对话的体验。</p>
+<p>此后，每次模型更新、编程工具升级，或者出现新的 Agent，我都会重新经历一遍兴奋与焦虑。兴奋来自它确实能帮我解决问题；焦虑则来自另一个方向：如果它越来越擅长我的工作，我还需要掌握什么？</p>
+<p>第一次写这篇文章时，我给自己的答案是：少被新闻牵着走，把 Go 和后端基础学扎实，AI 的基础设施与应用总还需要工程师。现在再看，前半句仍有价值，后半句却不足以支撑职业判断。<strong>一项技术仍被需要，与完成相关工作需要多少人，是两个问题。</strong></p>
+<p>这次修订，我想保留那些真实的使用经历，同时重新审视原先用来缓解焦虑的推论。文中资料核查截至 2026 年 10 月 30 日；涉及未来工作形态的内容属于情景推演，不是时间表或确定预测。</p>
+<h2 id="1">1. 工具采用与真实需求</h2>
+<p>有一次，我安装了 OpenClaw，接好模型接口，然后坐在电脑前想了很久：接下来让它做什么？</p>
+<p>写代码已有相对顺手的工具，深入学习和资料调研也有自己的方式。新的助手看起来能连接更多东西，但我暂时没有一个反复发生、值得交给它的任务。最后，我没有继续配置。</p>
+<p>这件事让我意识到，安装一个工具与改善一项工作之间，还缺少具体的任务定义。一个演示可以证明某种能力存在，却不能直接证明它适合我的工作。我需要知道输入是什么、结果怎样验收、执行频率有多高，以及出错后要花多少时间处理。</p>
+<p>类似的事情也发生在自建知识库上。我尝试过 Ollama 与向量数据库，后来看到 Gems 等产品能满足部分相近需求，就停止了继续搭建。当时觉得是自己没坚持下来，也觉得产品更新太快，个人尝试很容易失去意义。</p>
+<p>现在看来，需要区分两个目标：如果目标是方便地使用自己的资料，成熟产品可能已经足够；如果目标是理解检索、数据更新和权限隔离，自建过程仍有学习价值。Gems 支持自定义指令及知识文件，但这不意味着它与任意自建知识库在数据接入、检索控制和部署方式上等价。<a href="https://support.google.com/gemini/answer/15235603?hl=en">Google：Gems 的指令与知识文件</a></p>
+<p>我也曾把 AI 的热度与 2018 年的区块链热潮联系起来。这个类比可以提醒我留意技术之外的营销和资本叙事，却不能据此判断两者会有相同结局。对具体工具的判断，仍应回到它完成了什么工作、实际成本是多少。</p>
+<p>没有明确需求时暂缓采用，是一种资源分配；有明确需求时仍因抵触变化而拒绝试用，则可能错过收益。值得保留的是这两者之间的判断能力。</p>
+<h2 id="2">2. 模型能力与交付能力</h2>
+<p>讨论 AI 时，“会做一道题”“能完成一个任务”“能够承担一份工作”经常被混在一起。三者相关，但需要的条件并不相同。</p>
+<p>模型能提出正确方案，只是起点。真实任务还需要有效上下文、可用工具、合适权限和反馈渠道；稳定交付又涉及异常恢复、维护成本及责任划分。AI 可以参与其中的多个环节，但每增加一个环节，都需要新的验证依据。</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/ai-delivery-conditions.svg" data-desc-position="bottom"><img alt="模型能力转化为工作成果需要经过任务验证、执行条件、交付成本及组织分工等条件" src="../../../assets/ai-delivery-conditions.svg"></a></p>
+<p><em>图 1：能力转化为工作成果的条件。该图表示条件关系，不代表行业必然按顺序经历的发展阶段。</em></p>
+<h3 id="21">2.1 基准测试的含义与范围</h3>
+<p>我会继续关注能力评测，但需要看清指标究竟测量了什么。</p>
+<p>例如，METR 的任务时间跨度使用人类专家完成任务的耗时衡量任务难度，再估计 Agent 在给定成功率下能处理的范围。它并不是“AI 可以连续无人值守工作多久”。50% 成功率与更高可靠度也不能混为一谈，其任务集主要是要求明确、可自动评判的软件任务。<a href="https://metr.org/time-horizons/">METR：任务完成时间跨度，更新于 2026 年 9 月 8 日</a></p>
+<p>一个模型能完成原本需要数小时的任务，意味着能力边界发生了变化。要把这个结果用于实际系统，还需要说明失败代价、重试成本、上下文差异和验收标准。对于草稿生成，偶尔失败可能只意味着重新尝试；对于数据变更，同样的失败率可能无法接受。</p>
+<h3 id="22">2.2 效率应以完整任务衡量</h3>
+<p>“感觉更快”也需要验证。METR 在 2025 年的一项研究中，让 16 位熟悉相关开源项目的开发者处理 246 个真实任务，发现使用当时的 AI 工具后，完成时间平均增加了 19%。这描述的是特定时期、工具与任务条件下的结果，不能推广为所有开发工作的结论。<a href="https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/">METR：2025 年开发者效率研究</a></p>
+<p>到 2026 年 2 月，研究者在后续更新中认为工具可能已经带来更多提速，但参与者不愿进入无 AI 组等选择效应，以及并行使用多个 Agent 的计时问题，使提速幅度难以可靠估计。旧结论不能无限沿用，新结论也不能仅凭使用者的感觉确定。<a href="https://metr.org/blog/2026-02-24-uplift-update/">METR：后续实验设计调整</a></p>
+<p>这对我的启发是，要把计时终点放在“任务被接受并能正常使用”，而不是“模型生成完毕”。代码写得快，可以同时伴随更多审查；一次实现更快，也可能留下之后才出现的维护工作。</p>
+<p>对于个人实践，我会同时记录人工投入、任务完成的日历时间、工具费用和返工次数。把模型等待时间与人的操作时间分开，也能避免把并行带来的收益算错。生成速度当然有价值，但它只是完整成本的一部分。</p>
+<h2 id="3">3. 技术需求与岗位需求</h2>
+<p>原文里有两种安慰自己的说法，现在需要重新检验。</p>
+<p>第一种是：AI 需要服务器、Kubernetes、后端接口，所以熟悉 Go 就不容易失去工作。</p>
+<p>这些系统可能继续存在，维护它们的方式却会改变。如果同样的需求可以由更少的人完成，技术栈没有消失，相关岗位数量和招聘标准也可能变化。反过来，开发成本降低，原本不值得做的软件也可能变得值得做，从而形成新需求。两种效应可以同时发生，哪一种占主导，需要观察，不能仅从技术依赖关系推出结论。</p>
+<p>第二种是：自动化总需要人来建设和验收，所以人不会被替代。</p>
+<p>建设自动化确实包含人的工作，但其中的任务也可能继续自动化。今天需要人工提供上下文，明天可能由系统从仓库和历史记录中整理；今天需要逐项检查，明天可能由更好的测试和模型辅助完成。“目前还需要人”描述的是当前分工，无法保证这种分工长期不变。</p>
+<h3 id="31">3.1 任务暴露不等于岗位替代率</h3>
+<p>原文把一些研究概括成“工种替代率”，这个用词不够准确。Anthropic 在 2026 年 3 月的研究中结合理论能力与平台使用情况衡量任务暴露，并分析美国劳动力数据；它没有观察到高暴露职业失业率的系统性上升，但发现年轻劳动者进入这些职业的招聘可能放缓。后者属于初步证据，不能直接当作确定的因果结论，也不能代表中国或全球就业状况。<a href="https://www.anthropic.com/research/labor-market-impacts">Anthropic：AI 的劳动力市场影响</a></p>
+<p>ILO 同年 4 月的说明进一步区分了技术暴露与就业结果：能够影响多少现有任务，并不直接回答企业是否会采用、采用是否划算，以及工资、需求和组织分工如何调整。<a href="https://www.ilo.org/publications/workers%E2%80%99-exposure-ai-what-indicators-tell-us-%E2%80%93-and-what-they-don%E2%80%99t">ILO：AI 暴露指标的含义与局限</a></p>
+<p>因此，一份报告既不能告诉我“你有某个百分比的概率失业”，也不能因为尚未观察到显著失业，就证明岗位没有风险。岗位变化还可能表现为停止扩招、提高入门门槛，或者把更多职责交给现有人员。这些是需要分别核查的变化，不能由一个暴露分数代替。</p>
+<h3 id="32">3.2 工程基础的价值需要重新表达</h3>
+<p>我仍然愿意继续学习 Go、并发、数据库和分布式系统，但理由需要更具体。</p>
+<p>例如，AI 生成一个异步任务实现，我需要判断它是否把请求超时当成执行失败，是否在数据库提交前就发送消息，是否在任务重试时重复产生业务效果。理解这些问题，有助于提出约束、设计实验和解释故障。这种价值来自对系统行为的掌握，和手工写了多少行代码没有必然关系。</p>
+<p>不过，审查、架构和业务理解也不应被划成永久属于人类的领域。AI 同样会参与这些环节。我更愿意把基础知识看作参与更复杂工作的条件：它帮助我判断依据、修改方法，并在工具给不出可靠答案时继续处理问题。</p>
+<h2 id="4">4. 三种可能的工作形态</h2>
+<p>以下推演不依赖某一年出现“全能 AI”。我更关心的是：如果执行能力继续提高、使用成本逐步下降，而可靠性仍然有边界，工作会怎样重组。</p>
+<h3 id="41">4.1 维护长期状态的个人代理</h3>
+<p>我对个人助手的期待，已经超出了多开几个聊天窗口。</p>
+<p>一种可能的形态是，代理围绕长期目标维护状态：知道哪些资料已经核查，哪些决定仍然有效，哪个任务被什么条件阻塞，以及下一步可以在什么权限内执行。它能够在不同工具之间延续一项工作，暂停之后仍能恢复，不需要每次从头解释。</p>
+<p>以这个博客为例，助手可以定期识别引用失效、版本变化和论据不足的文章，查阅新资料，提出修订，再运行构建检查。更进一步，它可以根据我长期的学习方向整理待验证问题，帮助形成下一篇文章的研究材料。这里的目标是持续维护知识，而非持续制造文章。</p>
+<p>这种代理需要的记忆也不能只是对话越存越多。过期偏好要能撤销，事实与猜测要分开，资料需要来源和时间，执行任务需要预算与停止条件。能够读邮件，也不意味着可以替我承诺；能够改文件，也不意味着可以自行发布。</p>
+<p>权限判断本身已经成为 Agent 系统设计的一部分。Anthropic 在 2026 年的工程说明中，将输入侧提示注入识别与动作侧授权判断分开处理，并讨论自动判断的局限。它可以说明设计问题的具体性，但不能作为所有 Agent 已经可靠的证据。<a href="https://www.anthropic.com/research/claude-code-auto-mode">Anthropic：自动权限模式的设计</a></p>
+<p>我会用一个很朴素的信号判断这类系统是否值得采用：同一项任务交给它之后，我需要重新解释、纠错和接管的频率，是否随着使用而下降。如果使用时间越长，监督负担反而越大，那么“长期助手”还没有形成实际收益。</p>
+<h3 id="42">4.2 按任务生成的短期软件</h3>
+<p>另一种可能是，部分软件不再值得作为长期产品维护。</p>
+<p>一次数据整理、一个短期项目的内部界面、一份只需要运行几次的分析工具，都可能根据明确需求直接生成。过去开发和交接成本过高的小需求，会获得可用的实现。软件数量可能因此增加，但其中相当一部分只服务于特定任务。</p>
+<p>在这个情景下，需要长期保存的内容可能包括数据定义、业务规则、接口契约和验收样例。一些实现可以替换，约束和验证依据则需要延续。团队不必对每段临时代码投入相同维护成本，却必须知道什么可以重建，什么关系到长期兼容。</p>
+<p>这并不意味着代码可以随意丢弃。只要工具接触真实数据、影响他人工作，依赖版本、运行记录和可复现性仍然重要。数据丢失不会因为界面可以重新生成而自动恢复。长期运行、错误代价高、参与方多的系统，也很难仅靠一次生成完成治理。</p>
+<p>我认为这里可能出现的机会，是为某一类具体业务提供“可生成但可约束”的工具：输入格式清楚、权限范围有限、结果能够核验，必要时可以重建。这比再做一个没有特定使用场景的通用聊天入口，更容易判断价值。</p>
+<h3 id="43">4.3 小团队扩张与培养路径收缩</h3>
+<p>如果一个工程师可以同时组织多个有明确边界的执行任务，小团队可能承担过去更大的交付范围。需求澄清、实现、检查和运行之间的等待有机会缩短，一些过去需要跨多个人交接的工作可能集中到较少的人手中。</p>
+<p>但这里有一个我不愿忽略的矛盾：能够独立判断复杂系统的人，往往经历过大量看似普通的练习。修小问题、补测试、读旧代码、处理一次线上异常，都是形成判断力的过程。如果这些入口任务大量交给 AI，新人如何获得承担复杂任务的经验？</p>
+<p>“以后大家都去审查 AI”没有回答这个问题。没有做过设计、定位和修复，审查很容易只剩下确认语气是否自信、测试是否显示绿色。</p>
+<p>一种务实的调整，是把培养过程设计得更明确：让新人先提出假设，再比较模型方案；在隔离环境中复现故障；对同一问题给出不同实现，并解释取舍；对模型建议保留反例测试。工具可以降低练习环境的构建成本，但学习者仍需要亲自作出判断并接受反馈。</p>
+<p>这个情景既可能带来更高个人产出，也可能减少部分招聘需求。新增软件需求能否吸收这种变化，收益如何在使用者、公司和平台之间分配，都不会由技术进步自动决定。我没有充分依据给出乐观或悲观的单一答案。</p>
+<h2 id="5">5. 个人实践的取舍</h2>
+<p>这些推演需要落实到可检验的小范围实践，否则很容易形成另一种技术想象。</p>
+<h3 id="51">5.1 按任务分配自主权</h3>
+<p>我不会只按模型品牌决定交给它多少工作。任务是否容易验证、失败影响多大、能否恢复，同样重要。同一个工具，在修复文档链接和修改生产数据时，适合的授权范围可以完全不同。</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../../assets/ai-delegation-matrix.svg" data-desc-position="bottom"><img alt="以验证成本和失败影响划分任务，分别采用受限自动执行、人工确认、草案复核或辅助分析" src="../../../assets/ai-delegation-matrix.svg"></a></p>
+<p><em>图 2：任务分级与授权范围的定性框架。示例位置用于说明判断方式，实际授权还需考虑数据敏感性、运行环境和回滚能力。</em></p>
+<p>这张图也不是固定的人机分工表。测试工具、沙箱和业务规则更完善之后，一项任务的验证成本可能下降；进入生产环境之后，它的失败影响又可能增加。授权需要随具体条件调整。</p>
+<p>对于高影响任务，人工确认也只是一个环节。备份、回滚、最小权限和可追踪的执行记录，决定了确认之后仍然存在多少风险。</p>
+<h3 id="52">5.2 用两周验证一个持续需求</h3>
+<p>如果只选一件事，我会先尝试让 AI 协助维护这个博客，而不是继续收集助手工具。计划限定为两周，选取范围相近的文章做人工与 AI 辅助的交替检查，不在同一篇文章上简单重复比较，以减少熟悉内容带来的干扰。</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>可核验的结果</th>
+<th>需要记录的成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>检查链接与站内锚点</td>
+<td>给出位置、响应或缺失目标</td>
+<td>误报处理时间、遗漏情况</td>
+</tr>
+<tr>
+<td>核查版本相关论断</td>
+<td>原文、当前一手资料及适用日期对应</td>
+<td>阅读来源与判断相关性的时间</td>
+</tr>
+<tr>
+<td>提出内容修订</td>
+<td>修改有来源，保留原意与个人经历</td>
+<td>审查、返工和纠正新增错误的时间</td>
+</tr>
+<tr>
+<td>验证发布准备</td>
+<td>构建通过，图片与跳转正常</td>
+<td>工具费用、等待时间及恢复成本</td>
+</tr>
+</tbody>
+</table>
+<p>实验中只生成候选修订，发布由我确认。验收标准在执行前确定，不能因为 AI 给出了一个完整答案，就临时降低要求。</p>
+<p>我会同时看完成时间、人工投入、漏检、误改和一周后仍需返工的内容。两周的小样本只能帮助选择自己的工作方法，不能证明普遍生产率。如果没有稳定收益，就缩小任务范围或停止自动化。</p>
+<h3 id="53">5.3 保留独立形成判断的过程</h3>
+<p>最近一项研究让我对“最后由人确认”有了更具体的疑问。Anthropic 于 2026 年 10 月 27 日公布的实验，在统计分析任务中人为设置 Agent 的建议倾向，观察到专业分析人员的判断会随之改变。研究只覆盖特定任务、模型和实验条件，不能直接外推到所有专业工作，但它提示：签字确认未必意味着形成了独立判断。<a href="https://www.anthropic.com/research/agents-judgment-calls">Anthropic：Agent 对专家判断的影响</a></p>
+<p>这对我的使用方式有一个直接要求：在重要问题上，先写下自己接受结论的依据，以及什么证据会让我改变意见，再让 AI 提供分析。对它给出的结论，要能追溯到原始资料、运行结果或可复现过程。</p>
+<p>多开一个 Agent 交叉检查可以增加发现问题的机会，但几个模型给出相同说法，并不自动构成独立证据。如果共享错误前提，它们也可能一致地得出错误结论。</p>
+<p>我希望继续学习基础知识，也希望把重复劳动交出去。这两件事可以同时进行。判断自己是否进步的一个办法，是关掉对话窗口之后，能否独立解释关键取舍，能否指出方案失效的条件，并在出现问题时知道从哪里查起。</p>
+<h2 id="6">6. 不确定性与选择</h2>
+<p>我仍然期待 AI 继续变强。更好的工具意味着更多想法可以被尝试，也意味着个人能够进入过去因时间、知识或实现成本而放弃的领域。</p>
+<p>与此同时，我不再把“总还需要人”作为职业安全的保证。岗位名称可能保留，任务组成、人数和回报方式却发生变化；新工作可能出现，也不一定由原来的劳动者顺利承接。个人需要调整，团队也需要为学习、迁移和责任承担留出资源。</p>
+<p>对我而言，下一步可以很具体：选择一个持续存在的问题，明确验收方式，允许工具完成更多工作，并记录它到底省下了什么、又增加了什么。工具不合适时更换工具，原有判断不成立时修改判断。至于长期会走到哪里，我愿意保留想象，也愿意让实际结果修正这种想象。</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.instant", "navigation.tracking", "toc.follow", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../javascripts/text-mml-svg.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="860" viewBox="0 0 760 860" role="img" aria-labelledby="delegation-title delegation-desc">
+  <title id="delegation-title">任务分级与授权范围</title>
+  <desc id="delegation-desc">二维矩阵：横轴为验证成本，从左侧低到右侧高；纵轴为失败影响，从下侧低到上侧高。低成本低影响可受限自动执行；低成本高影响需确认后执行；高成本低影响适合生成草案并抽样复核；高成本高影响适合提供分析与选项。具体边界取决于环境与回滚能力。</desc>
+  <defs>
+    <marker id="delegation-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M2 1 L8 5 L2 9" fill="none" stroke="#717a80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+    .title { font-size: 36px; font-weight: 700; fill: #202326; }
+    .axis-label { font-size: 28px; font-weight: 600; fill: #3e6174; }
+    .level { font-size: 25px; fill: #636a70; }
+    .action { font-size: 30px; font-weight: 650; fill: #202326; }
+    .example { font-size: 27px; fill: #636a70; }
+    .note { font-size: 25px; fill: #636a70; }
+    .axis { stroke: #717a80; stroke-width: 1.8; fill: none; marker-end: url(#delegation-arrow); }
+  </style>
+  <rect width="760" height="860" fill="#f7f8f7"/>
+  <text x="40" y="64" class="title">任务分级与授权范围</text>
+  <text x="40" y="112" class="note">验证成本与失败影响共同约束可委托的范围</text>
+
+  <text x="100" y="164" class="axis-label">失败影响</text>
+  <path d="M70 688 V198" class="axis"/>
+  <text x="32" y="225" class="level">高</text>
+  <text x="32" y="676" class="level">低</text>
+
+  <rect x="100" y="200" width="290" height="232" rx="6" fill="#edf1f3" stroke="#d7dce0" stroke-width="1.5"/>
+  <text x="126" y="270" class="action">确认后执行</text>
+  <text x="126" y="326" class="example">已演练的版本发布</text>
+  <text x="126" y="396" class="level">可验证 · 高影响</text>
+
+  <rect x="406" y="200" width="314" height="232" rx="6" fill="#edf1f3" stroke="#d7dce0" stroke-width="1.5"/>
+  <text x="432" y="270" class="action">提供分析与选项</text>
+  <text x="432" y="326" class="example">业务决策</text>
+  <text x="432" y="364" class="example">架构取舍</text>
+
+  <rect x="100" y="448" width="290" height="232" rx="6" fill="#ffffff" stroke="#d7dce0" stroke-width="1.5"/>
+  <text x="126" y="518" class="action">受限自动执行</text>
+  <text x="126" y="574" class="example">格式化、链接修复</text>
+  <text x="126" y="644" class="level">可验证 · 低影响</text>
+
+  <rect x="406" y="448" width="314" height="232" rx="6" fill="#ffffff" stroke="#d7dce0" stroke-width="1.5"/>
+  <text x="432" y="518" class="action">草案与抽样复核</text>
+  <text x="432" y="574" class="example">内部资料综述</text>
+  <text x="432" y="612" class="example">方案初稿</text>
+
+  <path d="M100 710 H720" class="axis"/>
+  <text x="100" y="750" class="level">低</text>
+  <text x="354" y="750" class="axis-label">验证成本</text>
+  <text x="695" y="750" class="level">高</text>
+  <text x="40" y="818" class="note">概念框架，具体边界仍取决于环境与回滚能力</text>
+</svg>

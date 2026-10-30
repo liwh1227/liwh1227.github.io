@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="900" viewBox="0 0 760 900" role="img" aria-labelledby="delivery-title delivery-desc">
+  <title id="delivery-title">能力转化为工作成果的条件</title>
+  <desc id="delivery-desc">五个纵向相连的环节：模型能力、可验证任务、可执行流程、可接受的交付成本、组织与岗位变化。每个环节均需要额外条件，箭头不表示变化必然发生。</desc>
+  <defs>
+    <marker id="delivery-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L6 4 L1 7" fill="none" stroke="#7b858b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+    .title { font-size: 36px; font-weight: 700; fill: #202326; }
+    .subtitle { font-size: 25px; fill: #636a70; }
+    .name { font-size: 32px; font-weight: 650; fill: #202326; }
+    .detail { font-size: 28px; fill: #636a70; }
+    .number { font-size: 26px; font-weight: 600; fill: #3e6174; font-variant-numeric: tabular-nums; }
+    .card { fill: #ffffff; stroke: #d7dce0; stroke-width: 1.5; }
+    .connector { fill: none; stroke: #7b858b; stroke-width: 1.8; marker-end: url(#delivery-arrow); }
+  </style>
+  <rect width="760" height="900" fill="#f7f8f7"/>
+  <text x="40" y="64" class="title">能力转化为工作成果的条件</text>
+  <text x="40" y="108" class="subtitle">每一步都需要额外条件；并非必然的阶段进度</text>
+
+  <rect x="40" y="144" width="680" height="112" rx="8" class="card"/>
+  <text x="68" y="206" class="number">01</text>
+  <text x="130" y="190" class="name">模型能力</text>
+  <text x="130" y="231" class="detail">能提出候选方案</text>
+  <path d="M380 262 V280" class="connector"/>
+
+  <rect x="40" y="288" width="680" height="112" rx="8" class="card"/>
+  <text x="68" y="350" class="number">02</text>
+  <text x="130" y="334" class="name">可验证任务</text>
+  <text x="130" y="375" class="detail">验收条件与反馈</text>
+  <path d="M380 406 V424" class="connector"/>
+
+  <rect x="40" y="432" width="680" height="112" rx="8" class="card"/>
+  <text x="68" y="494" class="number">03</text>
+  <text x="130" y="478" class="name">可执行流程</text>
+  <text x="130" y="519" class="detail">上下文、工具和权限</text>
+  <path d="M380 550 V568" class="connector"/>
+
+  <rect x="40" y="576" width="680" height="112" rx="8" class="card"/>
+  <text x="68" y="638" class="number">04</text>
+  <text x="130" y="622" class="name">可接受的交付成本</text>
+  <text x="130" y="663" class="detail">检查、返工和长期维护</text>
+  <path d="M380 694 V712" class="connector"/>
+
+  <rect x="40" y="720" width="680" height="112" rx="8" class="card"/>
+  <text x="68" y="782" class="number">05</text>
+  <text x="130" y="766" class="name">组织与岗位变化</text>
+  <text x="130" y="807" class="detail">需求、分工与责任分配</text>
+  <text x="40" y="873" class="subtitle">概念关系图 · 不表示量化预测或固定演进顺序</text>
+</svg>
